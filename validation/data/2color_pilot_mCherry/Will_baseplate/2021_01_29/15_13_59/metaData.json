@@ -1,0 +1,80 @@
+{
+    "animalName": "",
+    "baseDirectory": "C:/Users/CaiShuman/Documents/phild/data/test/2021_01_29/15_13_59",
+    "behaviorTracker": {
+        "enabled": false,
+        "modelPath": "ABSOLUTE/PATH/TO/DLC/MODEL",
+        "occupancyPlot": {
+            "enabled": true,
+            "numBinsX": 100,
+            "numBinsY": 100,
+            "poseIdxToUse": [
+                0,
+                1,
+                2,
+                3,
+                4
+            ]
+        },
+        "pCutoffDisplay": 0.3,
+        "poseIdxForTraceDisplay": [
+            "0wh",
+            "1w",
+            "2w"
+        ],
+        "poseOverlay": {
+            "enabled": true,
+            "markerSize": 20,
+            "numOfPastPoses": 6,
+            "skeleton": {
+                "connectedIndices": [
+                    [
+                        0,
+                        1,
+                        2,
+                        3,
+                        4,
+                        5
+                    ],
+                    [
+                        6,
+                        7,
+                        8,
+                        9,
+                        10,
+                        11
+                    ],
+                    [
+                        12,
+                        13
+                    ]
+                ],
+                "enabled": true
+            },
+            "type": "point"
+        },
+        "pyEnvPath": "ABSOLUTE/PATH/TO/PYTHON/ENVIRONMENT",
+        "resize": 1,
+        "type": "DeepLabCut-Live",
+        "windowScale": 0.75,
+        "windowX": 200,
+        "windowY": 100
+    },
+    "cameras": [
+    ],
+    "experimentName": "test",
+    "miniscopes": [
+        "miniscopeDeviceName"
+    ],
+    "recordingStartTime": {
+        "day": 29,
+        "hour": 15,
+        "minute": 13,
+        "month": 1,
+        "msec": 614,
+        "msecSinceEpoch": 1611951239614,
+        "second": 59,
+        "year": 2021
+    },
+    "researcherName": ""
+}

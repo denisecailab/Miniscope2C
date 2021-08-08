@@ -1,0 +1,12 @@
+{
+    "compression": "GREY",
+    "deviceDirectory": "C:/Users/Tristan/Documents/phild/data/2color_pilot_mCherry/2C1/2021_05_18/14_18_37/miniscope_side",
+    "deviceID": 0,
+    "deviceName": "miniscope_side",
+    "deviceType": "Miniscope_V4_BNO",
+    "ewl": -15,
+    "frameRate": "30FPS",
+    "framesPerFile": 1000,
+    "gain": "Low",
+    "led0": 80
+}

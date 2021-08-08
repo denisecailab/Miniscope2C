@@ -1,0 +1,8 @@
+experiment,animal,date,time,session,comments
+2color_pilot_tdTomato,bench,2021_06_28,14_56_08,,"microsphere testing, focal change and translations."
+2color_pilot_tdTomato,bench,2021_06_17,12_11_56,,"resolution target with 0.5mm grin lens, focal change and translations."
+2color_pilot_tdTomato,bench,2021_06_14,12_52_39,,"resolution target, focal change and translations."
+2color_pilot_tdTomato,bench,2021_06_08,12_08_29,,"resolution target with 1mm grin lens, focal change and translations."
+2color_pilot_tdTomato,bench,2021_06_03,14_59_32,,"resolution target with 1mm grin lens, focal change and translations."
+2color_pilot_tdTomato,bench,2021_06_29,11_35_30,,"microsphere testing, ewl sweep from 82 to 120 on a 2 sec interval"
+2color_pilot_tdTomato,bench,2021_06_29,11_38_22,,"microsphere testing, ewl sweep from -116 to -80 on a 2 sec interval"

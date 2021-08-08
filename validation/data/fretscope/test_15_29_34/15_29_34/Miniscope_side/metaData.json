@@ -1,0 +1,12 @@
+{
+    "compression": "FFV1",
+    "deviceDirectory": "D:/MiniScope/data/DMK/fretscope/testTarget/2020_10_08/15_29_34/Miniscope_side",
+    "deviceID": 1,
+    "deviceName": "Miniscope_side",
+    "deviceType": "Miniscope_V4_BNO",
+    "ewl": 86,
+    "frameRate": 20,
+    "framesPerFile": 1000,
+    "gain": 3.5,
+    "led0": 100
+}

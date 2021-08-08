@@ -1,0 +1,18 @@
+{
+    "ROI": {
+        "height": 600,
+        "leftEdge": 0,
+        "topEdge": 0,
+        "width": 600
+    },
+    "compression": "FFV1",
+    "deviceDirectory": "C:/Users/CaiShuman/Documents/phild/data/test/2021_01_29/15_13_59/miniscopeDeviceName",
+    "deviceID": 0,
+    "deviceName": "miniscopeDeviceName",
+    "deviceType": "Miniscope_V4_BNO",
+    "ewl": 90,
+    "frameRate": "20FPS",
+    "framesPerFile": 1000,
+    "gain": "Low",
+    "led0": 53
+}

@@ -1,0 +1,81 @@
+{
+    "animalName": "",
+    "baseDirectory": "C:/Users/CaiShuman/Documents/phild/data/test/2021_06_03/13_12_40",
+    "behaviorTracker": {
+        "enabled": false,
+        "modelPath": "ABSOLUTE/PATH/TO/DLC/MODEL",
+        "occupancyPlot": {
+            "enabled": true,
+            "numBinsX": 100,
+            "numBinsY": 100,
+            "poseIdxToUse": [
+                0,
+                1,
+                2,
+                3,
+                4
+            ]
+        },
+        "pCutoffDisplay": 0.3,
+        "poseIdxForTraceDisplay": [
+            "0wh",
+            "1w",
+            "2w"
+        ],
+        "poseOverlay": {
+            "enabled": true,
+            "markerSize": 20,
+            "numOfPastPoses": 6,
+            "skeleton": {
+                "connectedIndices": [
+                    [
+                        0,
+                        1,
+                        2,
+                        3,
+                        4,
+                        5
+                    ],
+                    [
+                        6,
+                        7,
+                        8,
+                        9,
+                        10,
+                        11
+                    ],
+                    [
+                        12,
+                        13
+                    ]
+                ],
+                "enabled": true
+            },
+            "type": "point"
+        },
+        "pyEnvPath": "ABSOLUTE/PATH/TO/PYTHON/ENVIRONMENT",
+        "resize": 1,
+        "type": "DeepLabCut-Live",
+        "windowScale": 0.75,
+        "windowX": 200,
+        "windowY": 100
+    },
+    "cameras": [
+    ],
+    "experimentName": "test",
+    "miniscopes": [
+        "miniscope_side",
+        "miniscope_top"
+    ],
+    "recordingStartTime": {
+        "day": 3,
+        "hour": 13,
+        "minute": 12,
+        "month": 6,
+        "msec": 833,
+        "msecSinceEpoch": 1622740360833,
+        "second": 40,
+        "year": 2021
+    },
+    "researcherName": ""
+}

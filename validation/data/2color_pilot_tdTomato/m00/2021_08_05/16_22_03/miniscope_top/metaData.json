@@ -1,0 +1,12 @@
+{
+    "compression": "GREY",
+    "deviceDirectory": "C:/Users/Tristan/Documents/phild/data/2color_pilot_tdTomato/bench/2021_08_05/16_22_03/miniscope_top",
+    "deviceID": 0,
+    "deviceName": "miniscope_top",
+    "deviceType": "Miniscope_V4_BNO",
+    "ewl": 50,
+    "frameRate": "30FPS",
+    "framesPerFile": 1000,
+    "gain": 3.5,
+    "led0": 10
+}

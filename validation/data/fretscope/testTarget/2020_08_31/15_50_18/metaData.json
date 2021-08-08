@@ -1,0 +1,21 @@
+{
+    "animalID": "testTarget",
+    "animalName": "testTarget",
+    "baseDirectory": "C:/Users/CaiShuman/Documents/data/phild/test/testTarget/2020_08_31/15_50_18",
+    "cameras": [
+    ],
+    "day": 31,
+    "experimentName": "test",
+    "hour": 15,
+    "miniscopes": [
+        "Miniscope_top",
+        "Miniscope_side"
+    ],
+    "minute": 50,
+    "month": 8,
+    "msec": 461,
+    "msecSinceEpoch": 1598903418461,
+    "researcherName": "phild",
+    "second": 18,
+    "year": 2020
+}

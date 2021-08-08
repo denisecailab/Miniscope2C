@@ -1,0 +1,22 @@
+{
+    "animalName": "2C2",
+    "baseDirectory": "C:/Users/Tristan/Documents/phild/data/2color_pilot_mCherry/2C2/2021_05_18/14_23_34",
+    "cameras": [
+    ],
+    "experimentName": "2color_pilot_mCherry",
+    "miniscopes": [
+        "miniscope_side",
+        "miniscope_top"
+    ],
+    "recordingStartTime": {
+        "day": 18,
+        "hour": 14,
+        "minute": 23,
+        "month": 5,
+        "msec": 970,
+        "msecSinceEpoch": 1621362214970,
+        "second": 34,
+        "year": 2021
+    },
+    "researcherName": ""
+}

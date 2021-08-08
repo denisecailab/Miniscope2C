@@ -1,0 +1,22 @@
+{
+    "animalName": "2C2",
+    "baseDirectory": "C:/Users/Tristan/Documents/phild/data/2color_pilot_tdTomato/2C2/2021_05_28/14_00_30",
+    "cameras": [
+    ],
+    "experimentName": "2color_pilot_tdTomato",
+    "miniscopes": [
+        "miniscope_side",
+        "miniscope_top"
+    ],
+    "recordingStartTime": {
+        "day": 28,
+        "hour": 14,
+        "minute": 0,
+        "month": 5,
+        "msec": 194,
+        "msecSinceEpoch": 1622224830194,
+        "second": 30,
+        "year": 2021
+    },
+    "researcherName": ""
+}

@@ -1,0 +1,12 @@
+{
+    "compression": "FFV1",
+    "deviceDirectory": "C:/Users/CaiShuman/Documents/data/phild/test/testTarget/2020_08_31/15_50_18/Miniscope_side",
+    "deviceID": 2,
+    "deviceName": "Miniscope_side",
+    "deviceType": "Miniscope_V4_BNO",
+    "ewl": 50,
+    "frameRate": "30FPS",
+    "framesPerFile": 1000,
+    "gain": "Low",
+    "led0": 37
+}

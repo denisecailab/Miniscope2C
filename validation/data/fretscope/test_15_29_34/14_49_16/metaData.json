@@ -1,0 +1,21 @@
+{
+    "animalID": "testTarget",
+    "animalName": "testTarget",
+    "baseDirectory": "D:/MiniScope/data/DMK/fretscope/testTarget/2020_10_09/14_49_16",
+    "cameras": [
+    ],
+    "day": 9,
+    "experimentName": "fretscope",
+    "hour": 14,
+    "miniscopes": [
+        "Miniscope_top",
+        "Miniscope_side"
+    ],
+    "minute": 49,
+    "month": 10,
+    "msec": 590,
+    "msecSinceEpoch": 1602269356590,
+    "researcherName": "DMK",
+    "second": 16,
+    "year": 2020
+}

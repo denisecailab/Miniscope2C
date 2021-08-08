@@ -1,0 +1,12 @@
+{
+    "compression": "FFV1",
+    "deviceDirectory": "C:/Users/CaiShuman/Documents/data/phild/fretscope/testTarget/2020_09_10/12_13_40/Miniscope_top",
+    "deviceID": 1,
+    "deviceName": "Miniscope_top",
+    "deviceType": "Miniscope_V4_BNO",
+    "ewl": 50,
+    "frameRate": "30FPS",
+    "framesPerFile": 1000,
+    "gain": 3.5,
+    "led0": 100
+}

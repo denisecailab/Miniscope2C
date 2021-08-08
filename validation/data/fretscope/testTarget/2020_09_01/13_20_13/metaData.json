@@ -1,0 +1,21 @@
+{
+    "animalID": "testTarget",
+    "animalName": "testTarget",
+    "baseDirectory": "C:/Users/CaiShuman/Documents/data/phild/fretscope/testTarget/2020_09_01/13_20_13",
+    "cameras": [
+    ],
+    "day": 1,
+    "experimentName": "fretscope",
+    "hour": 13,
+    "miniscopes": [
+        "Miniscope_top",
+        "Miniscope_side"
+    ],
+    "minute": 20,
+    "month": 9,
+    "msec": 110,
+    "msecSinceEpoch": 1598980813110,
+    "researcherName": "phild",
+    "second": 13,
+    "year": 2020
+}
