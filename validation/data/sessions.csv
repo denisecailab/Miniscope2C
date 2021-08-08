@@ -6,3 +6,6 @@ experiment,animal,date,time,session,comments
 2color_pilot_tdTomato,bench,2021_06_03,14_59_32,,"resolution target with 1mm grin lens, focal change and translations."
 2color_pilot_tdTomato,bench,2021_06_29,11_35_30,,"microsphere testing, ewl sweep from 82 to 120 on a 2 sec interval"
 2color_pilot_tdTomato,bench,2021_06_29,11_38_22,,"microsphere testing, ewl sweep from -116 to -80 on a 2 sec interval"
+2color_pilot_tdTomato,m00,2021_08_05,12_27_59,,"baseplating recording"
+2color_pilot_tdTomato,m00,2021_08_05,16_22_03,,"awake recording right after baseplating"
+2color_pilot_mCherry,Will_baseplate,2021_01_29,15_13_59,,"mCherry scope testing on one of Will's GCamp animal during baseplating"
