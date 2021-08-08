@@ -111,7 +111,18 @@ def map_ts(ts: pd.DataFrame) -> pd.DataFrame:
 
 
 def norm(x: np.ndarray):
-    xmin, xmax = np.nanmin(x), np.nanmax(x)
+    xmin = np.nanmin(x)
+    xmax = np.nanmax(x)
+    diff = xmax - xmin
+    if diff > 0:
+        return (x - xmin) / diff
+    else:
+        return x
+
+
+def norm_xr(x: xr.DataArray):
+    xmin = x.min().compute().values
+    xmax = x.max().compute().values
     diff = xmax - xmin
     if diff > 0:
         return (x - xmin) / diff

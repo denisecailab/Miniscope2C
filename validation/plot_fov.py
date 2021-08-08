@@ -7,20 +7,27 @@ import holoviews as hv
 import matplotlib.pyplot as plt
 import numpy as np
 import xarray as xr
+from dask.diagnostics import ProgressBar
 from matplotlib import cm
-from routine.utilities import open_minian, norm
+from skimage.morphology import disk
+
+from routine.preprocessing import remove_background_perframe
+from routine.utilities import norm, open_minian
 
 hv.notebook_extension("bokeh")
 
-INTPATH = "./intermediate"
-CLIP_LOW_SIDE = 0.035
-CLIP_LOW_TOP = 0.03
-CLIP_HIGH = 0.95
+IN_DSPATH = "~/var/miniscope_2s/tdTomato/minian_ds"
+IN_DSPATH = os.path.normpath(os.path.expanduser(IN_DSPATH))
+CLIP_LOW_SIDE = 0.15
+CLIP_LOW_TOP = 0
+CLIP_HIGH = 0.45
 BRT_OFFSET = 0.1
 SUBSET = dict()
-OUTPATH = "./output"
+OUTPATH = "./output/tdTomato"
 param_ahe = {"tileGridSize": (20, 20), "clipLimit": 20}
-param_background = {"method": "tophat", "wnd": 10}
+param_background = {"method": "tophat", "wnd": 20}
+pbar = ProgressBar(minimum=2)
+pbar.register()
 
 
 def adaptive_thres(fm: np.ndarray, **kwargs):
@@ -30,18 +37,18 @@ def adaptive_thres(fm: np.ndarray, **kwargs):
 
 def process_frame(fm: np.ndarray, clip_high: float, clip_low: float):
     fm = norm(fm)
-    # selem = disk(param_background["wnd"])
-    # fm = remove_background_perframe(fm, selem=selem, **param_background)
+    selem = disk(param_background["wnd"])
+    fm = remove_background_perframe(fm, selem=selem, **param_background)
     fm = (norm(np.clip(fm, clip_low, clip_high)) * 255).astype(np.uint8)
-    fm = adaptive_thres(fm, **param_ahe)
+    # fm = adaptive_thres(fm, **param_ahe)
     return fm
 
 
 #%% load data
-ds = open_minian(INTPATH)
+ds = open_minian(IN_DSPATH)
 va_top = ds["va_top_mc"]
 va_side = ds["va_side_dm"]
-fm_top = va_top.sel(**SUBSET).compute().median("frame")
+fm_top = va_top.sel(**SUBSET).median("frame").compute()
 fm_side = va_side.sel(**SUBSET).max("frame").compute()
 
 #%% process frame
@@ -67,11 +74,8 @@ def plot_im(a, ax):
     ax.set_axis_off()
 
 
-# fm_top_clp = norm(fm_top.clip(CLIP_LOW, CLIP_HIGH))
 fm_top_clp = norm(fm_top_ps)
-# fm_side_clp = norm(fm_side.clip(CLIP_LOW, CLIP_HIGH))
 fm_side_clp = norm(fm_side_ps)
-# fm_side_reg_clp = norm(fm_side_reg.clip(CLIP_LOW, CLIP_HIGH))
 fm_side_reg_clp = norm(fm_side_reg)
 plt.rcParams.update({"axes.titlesize": 11, "font.sans-serif": "Arial"})
 aspect = 2.2

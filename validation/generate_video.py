@@ -4,11 +4,17 @@ import os
 import cv2
 import numpy as np
 import xarray as xr
-from routine.utilities import open_minian, norm, write_video
+from dask.diagnostics import ProgressBar
+
+from routine.utilities import norm_xr, open_minian, save_minian, write_video
 
 ANNT_COL = (255, 255, 255)
-INTPATH = "./intermediate"
-OUTPATH = "./output/result.mp4"
+IN_DSPATH = "~/var/miniscope_2s/tdTomato/minian_ds"
+IN_DSPATH = os.path.normpath(os.path.expanduser(IN_DSPATH))
+OUT_DSPATH = IN_DSPATH
+OUT_PATH = "./output/tdTomato/result.mp4"
+pbar = ProgressBar(minimum=2)
+pbar.register()
 
 
 def video_annt(fm, title):
@@ -22,12 +28,26 @@ def video_annt(fm, title):
 
 
 #%% generate video
-ds = open_minian(INTPATH)
-va_top = ds["va_top"].astype(float)
-va_side = ds["va_side_reg"].astype(float)
-diff = norm(va_top - va_side) * 255
-va_top = norm(va_top) * 255
-va_side = norm(va_side) * 255
+ds = open_minian(IN_DSPATH)
+va_top = ds["va_top_mc"]
+va_side = ds["va_side_dm"]
+va_top = save_minian(
+    (norm_xr(va_top) * 255).astype(np.uint8).rename("va_top_out"),
+    OUT_DSPATH,
+    overwrite=True,
+)
+va_side = save_minian(
+    (norm_xr(va_side) * 255).astype(np.uint8).rename("va_side_out"),
+    OUT_DSPATH,
+    overwrite=True,
+)
+diff = save_minian(
+    (norm_xr(va_top.astype(float) - va_side.astype(float)) * 255)
+    .astype(np.uint8)
+    .rename("va_diff_out"),
+    OUT_DSPATH,
+    overwrite=True,
+)
 va_top_out = xr.apply_ufunc(
     video_annt,
     va_top.clip(0, 255).astype(np.uint8),
@@ -55,9 +75,9 @@ diff = xr.apply_ufunc(
     kwargs={"title": "diff"},
     dask="parallelized",
 )
-os.makedirs(os.path.split(OUTPATH)[0], exist_ok=True)
+os.makedirs(os.path.split(OUT_PATH)[0], exist_ok=True)
 write_video(
     xr.concat([va_top_out, va_side_out, diff], "width"),
-    os.path.split(OUTPATH)[1],
-    os.path.split(OUTPATH)[0],
+    os.path.split(OUT_PATH)[1],
+    os.path.split(OUT_PATH)[0],
 )

@@ -3,28 +3,54 @@ import os
 import pickle
 import re
 
-import cv2
+import dask.array as darr
 import holoviews as hv
-import numpy as np
 import pandas as pd
 import xarray as xr
 from dask.diagnostics import ProgressBar
 
 from routine.alignment import apply_transform, est_affine
-from routine.utilities import open_minian, save_minian
+from routine.preprocessing import denoise, rebase, remove_background
+from routine.utilities import load_v4_folder, save_minian
 
 pbar = ProgressBar(minimum=2)
 pbar.register()
 hv.notebook_extension("bokeh")
 
-INTPATH = "./intermediate"
-IN_FM = slice(0, 300)
-OUT_TX = "./store/affine_tx.pkl"
+IN_DPATH = "data/2color_pilot_tdTomato/bench/2021_06_28/14_56_08"
+IN_FM = slice(0, 15 * 30)
+OUT_TX = "./store/tx_tdTomato.pkl"
+OUT_FIG = "./output/tdTomato/alignment.html"
 
-#%% load data
-minian_ds = open_minian(INTPATH)
-va_top = minian_ds["va_top"]
-va_side = minian_ds["va_side"]
+
+def pre_process(va: xr.DataArray) -> xr.DataArray:
+    va = denoise(va, method="median", ksize=3)
+    va = remove_background(va.astype(float), method="uniform", wnd=30)
+    va = xr.apply_ufunc(
+        rebase,
+        va,
+        input_core_dims=[["height", "width"]],
+        output_core_dims=[["height", "width"]],
+        dask="parallelized",
+        vectorize=True,
+        kwargs={"q": 0.8},
+    )
+    return va
+
+
+#%% load data and preprocess
+va_top, va_side = load_v4_folder(IN_DPATH)
+va_side = xr.apply_ufunc(
+    darr.flip,
+    va_side,
+    input_core_dims=[["frame", "height", "width"]],
+    output_core_dims=[["frame", "height", "width"]],
+    kwargs={"axis": 1},
+    dask="allowed",
+)
+va_top = pre_process(va_top)
+va_side = pre_process(va_side)
+
 #%% compute alignment
 fm_top = va_top.isel(frame=IN_FM).compute().median("frame")
 fm_side = va_side.isel(frame=IN_FM).compute().median("frame")
@@ -41,9 +67,10 @@ fm_side_reg = xr.apply_ufunc(
     output_core_dims=[["height", "width"]],
     kwargs={"tx": tx},
 )
+
 #%% plot result
 im_opts = {"cmap": "viridis"}
-(
+hv_align = (
     hv.Image(fm_top, ["width", "height"], label="top").opts(**im_opts)
     + hv.Image(fm_side, ["width", "height"], label="side").opts(**im_opts)
     + hv.Image(fm_side_reg, ["width", "height"], label="side_reg").opts(**im_opts)
@@ -51,23 +78,9 @@ im_opts = {"cmap": "viridis"}
         **im_opts
     )
 ).cols(2)
+hv.save(hv_align, OUT_FIG)
 
 #%% save result
 os.makedirs(os.path.split(OUT_TX)[0], exist_ok=True)
 with open(OUT_TX, "wb") as pklf:
     pickle.dump(tx, pklf)
-
-#%% align videos
-with open(OUT_TX, "rb") as pklf:
-    tx = pickle.load(pklf)
-va_side_reg = xr.apply_ufunc(
-    apply_transform,
-    va_side,
-    input_core_dims=[["height", "width"]],
-    output_core_dims=[["height", "width"]],
-    vectorize=True,
-    kwargs={"tx": tx, "fill": 0},
-    dask="parallelized",
-    output_dtypes=float,
-)
-va_side_reg = save_minian(va_side_reg.rename("va_side_reg"), INTPATH, overwrite=True)
