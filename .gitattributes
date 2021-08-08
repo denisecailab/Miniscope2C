@@ -1,2 +1,2 @@
-* annex.largefiles=largerthan=80mb
+* annex.largefiles=largerthan=40mb
 *.avi annex.largefiles=anything
