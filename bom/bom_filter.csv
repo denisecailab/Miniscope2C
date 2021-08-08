@@ -1,0 +1,16 @@
+configuration,role,vendor,PN,description,size,link,quantity,unit_price,ext_price
+fret,ft_ext,chroma,ET445/30x,bandpass 445nm,4mmx4mm,https://www.chroma.com/products/parts/et445-30x,5,95,380
+fret,dich_ext,chroma,T470lpxr,highpass 470nm,4mmx6mm,https://www.chroma.com/products/parts/t470lpxr,5,75,300
+fret,dich_emm,chroma,T505lpxr,highpass 505nm,4mmx6mm,https://www.chroma.com/products/parts/t505lpxr,5,75,300
+fret,ft_emm_top,chroma,ET535/50m,bandpass 535nm,4mmx4mm,https://www.chroma.com/products/parts/et535-50m,5,95,380
+fret,ft_emm_side,chroma,ET485/25m,bandpass 285nm,4mmx4mm,https://www.chroma.com/products/parts/et485-25m,5,95,,
+gfp+tdTomato,ft_ext,chroma,ZET488/561x,dual-bandpass 488nm 561nm,4mmx4mm,https://www.chroma.com/products/parts/zet488-561x,5,135,540
+gfp+tdTomato,dich_ext,chroma,ZT488/561rpc,Reflects lasers between 482-493nm and 555-566nm,4mmx6mm,https://www.chroma.com/products/parts/zt488-561rpc,5,140,560
+gfp+tdTomato,dich_emm,chroma,T556lpxr,highpass 556nm,4mmx6mm,https://www.chroma.com/products/parts/t556lpxr,5,75,300
+gfp+tdTomato,ft_emm_side,chroma,ET525/50m,bandpass 525nm,4mmx4mm,https://www.chroma.com/products/parts/et525-50m,5,48,192
+gfp+tdTomato,ft_emm_top,chroma,ET600/50m,bandpass 600nm,4mmx4mm,https://www.chroma.com/products/parts/et600-50m,5,95,380
+gfp+mCherry,ft_ext,chroma,59010x,bandpass 488nm 584nm,4mmx4mm,https://www.chroma.com/products/parts/59010x,5,125,500
+gfp+mCherry,dich_ext,chroma,ZT488/594rpc,Reflects lasers between 483-493nm and 582-597nm,4mmx6mm,https://www.chroma.com/products/parts/zt488-594rpc,5,140,560
+gfp+mCherry,dich_emm,chroma,T570lpxr,highpass 570nm,4mmx6mm,https://www.chroma.com/products/parts/t570lpxr,5,75,300
+gfp+mCherry,ft_emm_side,chroma,ET525/50m,bandpass 525nm,4mmx4mm,https://www.chroma.com/products/parts/et525-50m,5,48,192
+gfp+mCherry,ft_emm_top,chroma,ET632/60m,bandpass 632nm,4mmx4mm,https://www.chroma.com/products/parts/et632-60m,5,95,380

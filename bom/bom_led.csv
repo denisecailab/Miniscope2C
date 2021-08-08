@@ -1,0 +1,4 @@
+configuration,role,vendor,PN,description,link,quantity,price
+gfp+tdTomato,led-tdTomato,mouser,LXZ1-PM01,high-power color led 520nm-540nm,https://www.mouser.com/ProductDetail/Lumileds/LXZ1-PM01?qs=%2Fha2pyFadug%2FqluFocp%2FpPzVDgbtyF01U9pdeIoY7a8%3D,1,2.74
+gfp+mCherry,led-mCherry,mouser,LXZ1-PL01,high-power color led 585nm-590nm,https://www.mouser.com/ProductDetail/Lumileds/LXZ1-PL01?qs=%2Fha2pyFaduiHKBMv7BMFuwuAhuHq0l2dPLPS3VFLOV4%3D,1,2.74
+all,led-gfp,mouser,LXZ1-PB01,high-power color led 460nm-480nm,https://www.mouser.com/ProductDetail/Lumileds/LXZ1-PB01?qs=%2Fha2pyFaduhtUS5tajtytctTb8pd7IXEjVLYZXqEwRg%3D,1,2.74

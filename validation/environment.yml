@@ -1,0 +1,29 @@
+channels:
+  - conda-forge
+dependencies:
+  - bokeh
+  - dask
+  - datashader
+  - distributed
+  - ffmpeg
+  - ffmpeg-python
+  - holoviews
+  - jupyter
+  - matplotlib-base
+  - natsort
+  - netcdf4
+  - numba
+  - numpy
+  - opencv
+  - pandas
+  - python
+  - scikit-image
+  - scikit-learn
+  - scipy
+  - simpleitk
+  - sk-video
+  - xarray
+  - zarr
+  - sparse
+  - black
+  - rechunker
