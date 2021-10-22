@@ -135,3 +135,18 @@ os.makedirs(OUTPATH, exist_ok=True)
 fig.savefig(os.path.join(OUTPATH, "fov.svg"))
 fig.savefig(os.path.join(OUTPATH, "fov.png"))
 hv.save(hv_plt, os.path.join(OUTPATH, "fov.html"))
+
+fig_top, ax_top = plt.subplots(1, 1, dpi=500)
+ax_top.set_title("tdTomato")
+plot_im(fm_top_pcolor, ax_top)
+fig_top.savefig(os.path.join(OUTPATH, "tdTomato.png"))
+
+fig_side, ax_side = plt.subplots(1, 1, dpi=500)
+ax_side.set_title("GCamp")
+plot_im(fm_side_pcolor, ax_side)
+fig_side.savefig(os.path.join(OUTPATH, "GCamp.png"))
+
+fig_ovly, ax_ovly = plt.subplots(1, 1, dpi=500)
+ax_ovly.set_title("Overlay")
+plot_im(fm_ovly, ax_ovly)
+fig_ovly.savefig(os.path.join(OUTPATH, "overlay.png"))
