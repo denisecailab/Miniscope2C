@@ -47,9 +47,8 @@ def process_frame(fm: np.ndarray, clip_high: float, clip_low: float):
 #%% load data
 ds = open_minian(IN_DSPATH)
 va_top = ds["va_top_mc"]
-va_side = ds["va_side_dm"]
-fm_top = va_top.sel(**SUBSET).median("frame").compute()
-fm_side = va_side.sel(**SUBSET).max("frame").compute()
+fm_top = va_top.sel(**SUBSET).max("frame").compute()
+fm_side = ds["A"].max("unit_id").compute()
 
 #%% process frame
 fm_top_ps = xr.apply_ufunc(
