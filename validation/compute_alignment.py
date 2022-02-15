@@ -1,86 +1,87 @@
-#%% imports and definitions
 import os
 import pickle
-import re
 
-import dask.array as darr
 import holoviews as hv
-import pandas as pd
+import numpy as np
 import xarray as xr
-from dask.diagnostics import ProgressBar
+from dask.distributed import Client, LocalCluster
+from minian.utilities import TaskAnnotation, save_minian
 
 from routine.alignment import apply_transform, est_affine
-from routine.preprocessing import denoise, rebase, remove_background
-from routine.utilities import load_v4_folder, save_minian
+from routine.minian_pipeline import minian_process
 
-pbar = ProgressBar(minimum=2)
-pbar.register()
 hv.notebook_extension("bokeh")
 
-IN_DPATH = "data/2color_pilot_tdTomato/bench/2021_06_28/14_56_08"
-IN_FM = slice(0, 15 * 30)
-OUT_TX = "./store/tx_tdTomato.pkl"
-OUT_FIG = "./output/tdTomato/alignment.html"
+IN_DPATH = "validation/data/2color_pilot_tdTomato/m00/2021_08_05/16_22_03"
+INT_PATH = "~/var/miniscope_2s/minian_int"
+OUT_TX = "validation/store/tx_tdTomato.pkl"
+OUT_FIG = "validation/output/tdTomato/alignment.html"
+INT_PATH = os.path.abspath(os.path.expanduser(INT_PATH))
+PARAM = {
+    "load_videos": {"pattern": "\.avi$", "dtype": np.uint8},
+    "subset": None,
+    "denoise": {"method": "median", "ksize": 3},
+    "background_removal": {"method": "tophat", "wnd": 15},
+    "estimate_motion": {"dim": "frame"},
+}
 
 
-def pre_process(va: xr.DataArray) -> xr.DataArray:
-    va = denoise(va, method="median", ksize=3)
-    va = remove_background(va.astype(float), method="uniform", wnd=30)
-    va = xr.apply_ufunc(
-        rebase,
-        va,
+def align_preprocess(dpath, client, **kwargs):
+    save_path = os.path.join(dpath, "minian_ds")
+    param = PARAM.copy()
+    param["save_minian"] = {"dpath": save_path, "overwrite": True}
+    motion, va, va_chk = minian_process(
+        dpath,
+        INT_PATH,
+        param=param,
+        return_stage="motion-correction",
+        client=client,
+        glow_rm=False,
+        **kwargs
+    )
+    max_proj = save_minian(
+        va.max("frame").rename("max_proj"), save_path, overwrite=True
+    )
+    return max_proj.compute()
+
+
+if __name__ == "__main__":
+    # load data and preprocess
+    cluster = LocalCluster(
+        n_workers=16,
+        memory_limit="4GB",
+        resources={"MEM": 1},
+        threads_per_worker=2,
+        dashboard_address="0.0.0.0:12345",
+    )
+    annt_plugin = TaskAnnotation()
+    cluster.scheduler.add_plugin(annt_plugin)
+    client = Client(cluster)
+    top_path = os.path.join(IN_DPATH, "miniscope_top")
+    fm_top = align_preprocess(top_path, client)
+    side_path = os.path.join(IN_DPATH, "miniscope_side")
+    fm_side = align_preprocess(side_path, client, flip=True)
+    # compute alignment
+    tx, param_df = est_affine(fm_side.values, fm_top.values, lr=1)
+    fm_side_reg = xr.apply_ufunc(
+        apply_transform,
+        fm_side,
         input_core_dims=[["height", "width"]],
         output_core_dims=[["height", "width"]],
-        dask="parallelized",
-        vectorize=True,
-        kwargs={"q": 0.8},
+        kwargs={"tx": tx},
     )
-    return va
-
-
-#%% load data and preprocess
-va_top, va_side = load_v4_folder(IN_DPATH)
-va_side = xr.apply_ufunc(
-    darr.flip,
-    va_side,
-    input_core_dims=[["frame", "height", "width"]],
-    output_core_dims=[["frame", "height", "width"]],
-    kwargs={"axis": 1},
-    dask="allowed",
-)
-va_top = pre_process(va_top)
-va_side = pre_process(va_side)
-
-#%% compute alignment
-fm_top = va_top.isel(frame=IN_FM).compute().median("frame")
-fm_side = va_side.isel(frame=IN_FM).compute().median("frame")
-tx, param_dict = est_affine(fm_side.values, fm_top.values, lr=1)
-param_df = (
-    pd.Series(param_dict)
-    .reset_index(name="metric")
-    .rename(lambda c: re.sub("level_", "param_", c), axis="columns")
-)
-fm_side_reg = xr.apply_ufunc(
-    apply_transform,
-    fm_side,
-    input_core_dims=[["height", "width"]],
-    output_core_dims=[["height", "width"]],
-    kwargs={"tx": tx},
-)
-
-#%% plot result
-im_opts = {"cmap": "viridis"}
-hv_align = (
-    hv.Image(fm_top, ["width", "height"], label="top").opts(**im_opts)
-    + hv.Image(fm_side, ["width", "height"], label="side").opts(**im_opts)
-    + hv.Image(fm_side_reg, ["width", "height"], label="side_reg").opts(**im_opts)
-    + hv.Image((fm_side_reg - fm_top), ["width", "height"], label="affine").opts(
-        **im_opts
-    )
-).cols(2)
-hv.save(hv_align, OUT_FIG)
-
-#%% save result
-os.makedirs(os.path.split(OUT_TX)[0], exist_ok=True)
-with open(OUT_TX, "wb") as pklf:
-    pickle.dump(tx, pklf)
+    # plot result
+    im_opts = {"cmap": "viridis"}
+    hv_align = (
+        hv.Image(fm_top, ["width", "height"], label="top").opts(**im_opts)
+        + hv.Image(fm_side, ["width", "height"], label="side").opts(**im_opts)
+        + hv.Image(fm_side_reg, ["width", "height"], label="side_reg").opts(**im_opts)
+        + hv.Image((fm_side_reg - fm_top), ["width", "height"], label="affine").opts(
+            **im_opts
+        )
+    ).cols(2)
+    hv.save(hv_align, OUT_FIG)
+    # save result
+    os.makedirs(os.path.dirname(OUT_TX), exist_ok=True)
+    with open(OUT_TX, "wb") as pklf:
+        pickle.dump(tx, pklf)
