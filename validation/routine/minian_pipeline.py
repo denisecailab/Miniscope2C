@@ -1,23 +1,18 @@
 import os
+import shutil
 
-
+import dask.array as darr
+import xarray as xr
 from dask.distributed import Client, LocalCluster
-
 from minian.cnmf import (
     compute_trace,
     get_noise_fft,
     unit_merge,
+    update_background,
     update_spatial,
     update_temporal,
 )
-from minian.initialization import (
-    initA,
-    initbf,
-    initC,
-    pnr_refine,
-    seeds_init,
-    seeds_merge,
-)
+from minian.initialization import initA, initC, pnr_refine, seeds_init, seeds_merge
 from minian.motion_correction import apply_transform, estimate_motion
 from minian.preprocessing import denoise, remove_background
 from minian.utilities import (
@@ -30,24 +25,36 @@ from minian.utilities import (
 from minian.visualization import generate_videos
 
 
-def minian_process(dpath, intpath, n_workers, param, varr=None):
+def minian_process(
+    dpath,
+    intpath,
+    param,
+    glow_rm=True,
+    return_stage=None,
+    varr=None,
+    client=None,
+    n_workers=None,
+    flip=False,
+):
     # setup
     dpath = os.path.abspath(os.path.expanduser(dpath))
     intpath = os.path.abspath(os.path.expanduser(intpath))
+    shutil.rmtree(intpath, ignore_errors=True)
     os.environ["OMP_NUM_THREADS"] = "1"
     os.environ["MKL_NUM_THREADS"] = "1"
     os.environ["OPENBLAS_NUM_THREADS"] = "1"
     os.environ["MINIAN_INTERMEDIATE"] = intpath
-    cluster = LocalCluster(
-        n_workers=n_workers,
-        memory_limit="4GB",
-        resources={"MEM": 1},
-        threads_per_worker=2,
-        dashboard_address="0.0.0.0:12345",
-    )
-    annt_plugin = TaskAnnotation()
-    cluster.scheduler.add_plugin(annt_plugin)
-    client = Client(cluster)
+    if client is None:
+        cluster = LocalCluster(
+            n_workers=n_workers,
+            memory_limit="4GB",
+            resources={"MEM": 1},
+            threads_per_worker=2,
+            dashboard_address="0.0.0.0:12345",
+        )
+        annt_plugin = TaskAnnotation()
+        cluster.scheduler.add_plugin(annt_plugin)
+        client = Client(cluster)
     if varr is None:
         varr = load_videos(dpath, **param["load_videos"])
     else:
@@ -58,18 +65,31 @@ def minian_process(dpath, intpath, n_workers, param, varr=None):
         intpath,
         overwrite=True,
     )
+    varr_ref = varr.sel(param["subset"])
+    if flip:
+        varr_ref = xr.apply_ufunc(
+            darr.flip,
+            varr_ref,
+            input_core_dims=[["frame", "height", "width"]],
+            output_core_dims=[["frame", "height", "width"]],
+            kwargs={"axis": 1},
+            dask="allowed",
+        )
     # preprocessing
-    varr_ref = varr
-    # varr_ref = denoise(varr_ref, **param["denoise"])
-    # varr_ref = remove_background(varr_ref, **param["background_removal"])
+    if glow_rm:
+        varr_min = varr_ref.min("frame").compute()
+        varr_ref = varr_ref - varr_min
+    varr_ref = denoise(varr_ref, **param["denoise"])
+    varr_ref = remove_background(varr_ref, **param["background_removal"])
     varr_ref = save_minian(varr_ref.rename("varr_ref"), dpath=intpath, overwrite=True)
+    if return_stage == "preprocessing":
+        return varr_ref
     # motion-correction
-    # motion = estimate_motion(varr_ref, **param["estimate_motion"])
-    # motion = save_minian(
-    #     motion.rename("motion").chunk({"frame": chk["frame"]}), **param["save_minian"]
-    # )
-    # Y = apply_transform(varr_ref, motion, fill=0)
-    Y = varr_ref
+    motion = estimate_motion(varr_ref, **param["estimate_motion"])
+    motion = save_minian(
+        motion.rename("motion").chunk({"frame": chk["frame"]}), **param["save_minian"]
+    )
+    Y = apply_transform(varr_ref, motion, fill=0)
     Y_fm_chk = save_minian(Y.astype(float).rename("Y_fm_chk"), intpath, overwrite=True)
     Y_hw_chk = save_minian(
         Y_fm_chk.rename("Y_hw_chk"),
@@ -77,6 +97,8 @@ def minian_process(dpath, intpath, n_workers, param, varr=None):
         overwrite=True,
         chunks={"frame": -1, "height": chk["height"], "width": chk["width"]},
     )
+    if return_stage == "motion-correction":
+        return motion, Y_fm_chk, Y_hw_chk
     # initilization
     max_proj = save_minian(
         Y_fm_chk.max("frame").rename("max_proj"), **param["save_minian"]
@@ -98,7 +120,7 @@ def minian_process(dpath, intpath, n_workers, param, varr=None):
     )
     try:
         A, C = unit_merge(A_init, C_init, **param["init_merge"])
-    except:
+    except KeyError:
         A, C = A_init, C_init
     A = save_minian(A.rename("A"), intpath, overwrite=True)
     C = save_minian(C.rename("C"), intpath, overwrite=True)
@@ -108,16 +130,27 @@ def minian_process(dpath, intpath, n_workers, param, varr=None):
         overwrite=True,
         chunks={"unit_id": -1, "frame": chk["frame"]},
     )
-    b, f = initbf(Y_fm_chk, A, C_chk)
+    b, f = update_background(Y_fm_chk, A, C_chk)
     f = save_minian(f.rename("f"), intpath, overwrite=True)
     b = save_minian(b.rename("b"), intpath, overwrite=True)
+    if return_stage == "initialization":
+        return A, C, b, f
     # cnmf
     sn_spatial = get_noise_fft(Y_hw_chk, **param["get_noise"])
     sn_spatial = save_minian(sn_spatial.rename("sn_spatial"), intpath, overwrite=True)
     ## first iteration
-    A_new, b_new, f_new, mask = update_spatial(
-        Y_hw_chk, A, b, C, f, sn_spatial, **param["first_spatial"]
+    A_new, mask, norm_fac = update_spatial(
+        Y_hw_chk, A, C, sn_spatial, **param["first_spatial"]
     )
+    C_new = save_minian(
+        (C.sel(unit_id=mask) * norm_fac).rename("C_new"), intpath, overwrite=True
+    )
+    C_chk_new = save_minian(
+        (C_chk.sel(unit_id=mask) * norm_fac).rename("C_chk_new"),
+        intpath,
+        overwrite=True,
+    )
+    b_new, f_new = update_background(Y_fm_chk, A_new, C_chk_new)
     A = save_minian(
         A_new.rename("A"),
         intpath,
@@ -128,8 +161,8 @@ def minian_process(dpath, intpath, n_workers, param, varr=None):
     f = save_minian(
         f_new.chunk({"frame": chk["frame"]}).rename("f"), intpath, overwrite=True
     )
-    C = C.sel(unit_id=A.coords["unit_id"].values)
-    C_chk = C_chk.sel(unit_id=A.coords["unit_id"].values)
+    C = save_minian(C_new.rename("C"), intpath, overwrite=True)
+    C_chk = save_minian(C_chk_new.rename("C_chk"), intpath, overwrite=True)
     YrA = save_minian(
         compute_trace(Y_fm_chk, A, b, C_chk, f).rename("YrA"),
         intpath,
@@ -163,7 +196,7 @@ def minian_process(dpath, intpath, n_workers, param, varr=None):
         A_mrg, C_mrg, [sig_mrg] = unit_merge(
             A, C, [C + b0 + c0], **param["first_merge"]
         )
-    except:
+    except KeyError:
         A_mrg, C_mrg, sig_mrg = A, C, C + b0 + c0
     A = save_minian(A_mrg.rename("A_mrg"), intpath, overwrite=True)
     C = save_minian(C_mrg.rename("C_mrg"), intpath, overwrite=True)
@@ -175,9 +208,18 @@ def minian_process(dpath, intpath, n_workers, param, varr=None):
     )
     sig = save_minian(sig_mrg.rename("sig_mrg"), intpath, overwrite=True)
     ## second iteration
-    A_new, b_new, f_new, mask = update_spatial(
-        Y_hw_chk, A, b, sig, f, sn_spatial, **param["second_spatial"]
+    A_new, mask, norm_fac = update_spatial(
+        Y_hw_chk, A, sig, sn_spatial, **param["second_spatial"]
     )
+    C_new = save_minian(
+        (C.sel(unit_id=mask) * norm_fac).rename("C_new"), intpath, overwrite=True
+    )
+    C_chk_new = save_minian(
+        (C_chk.sel(unit_id=mask) * norm_fac).rename("C_chk_new"),
+        intpath,
+        overwrite=True,
+    )
+    b_new, f_new = update_background(Y_fm_chk, A_new, C_chk_new)
     A = save_minian(
         A_new.rename("A"),
         intpath,
@@ -188,8 +230,8 @@ def minian_process(dpath, intpath, n_workers, param, varr=None):
     f = save_minian(
         f_new.chunk({"frame": chk["frame"]}).rename("f"), intpath, overwrite=True
     )
-    C = C.sel(unit_id=A.coords["unit_id"].values)
-    C_chk = C_chk.sel(unit_id=A.coords["unit_id"].values)
+    C = save_minian(C_new.rename("C"), intpath, overwrite=True)
+    C_chk = save_minian(C_chk_new.rename("C_chk"), intpath, overwrite=True)
     YrA = save_minian(
         compute_trace(Y_fm_chk, A, b, C_chk, f).rename("YrA"),
         intpath,
@@ -228,5 +270,4 @@ def minian_process(dpath, intpath, n_workers, param, varr=None):
     f = save_minian(f.rename("f"), **param["save_minian"])
     # generate video
     generate_videos(varr, Y_fm_chk, A=A, C=C_chk, vpath=dpath)
-    client.close()
-    cluster.close()
+    return A, C, S, b, f
