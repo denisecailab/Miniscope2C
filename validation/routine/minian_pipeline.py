@@ -24,6 +24,8 @@ from minian.utilities import (
 )
 from minian.visualization import generate_videos
 
+from .alignment import apply_affine
+
 
 def minian_process(
     dpath,
@@ -35,6 +37,7 @@ def minian_process(
     client=None,
     n_workers=None,
     flip=False,
+    tx=None,
 ):
     # setup
     dpath = os.path.abspath(os.path.expanduser(dpath))
@@ -66,6 +69,12 @@ def minian_process(
         overwrite=True,
     )
     varr_ref = varr.sel(param["subset"])
+    # preprocessing
+    if glow_rm:
+        varr_min = varr_ref.min("frame").compute()
+        varr_ref = varr_ref - varr_min
+    varr_ref = denoise(varr_ref, **param["denoise"])
+    varr_ref = remove_background(varr_ref, **param["background_removal"])
     if flip:
         varr_ref = xr.apply_ufunc(
             darr.flip,
@@ -75,12 +84,16 @@ def minian_process(
             kwargs={"axis": 1},
             dask="allowed",
         )
-    # preprocessing
-    if glow_rm:
-        varr_min = varr_ref.min("frame").compute()
-        varr_ref = varr_ref - varr_min
-    varr_ref = denoise(varr_ref, **param["denoise"])
-    varr_ref = remove_background(varr_ref, **param["background_removal"])
+    if tx is not None:
+        varr_ref = xr.apply_ufunc(
+            apply_affine,
+            varr_ref,
+            input_core_dims=[["height", "width"]],
+            output_core_dims=[["height", "width"]],
+            kwargs={"tx": tx},
+            vectorize=True,
+            dask="parallelized",
+        )
     varr_ref = save_minian(varr_ref.rename("varr_ref"), dpath=intpath, overwrite=True)
     if return_stage == "preprocessing":
         return varr_ref
