@@ -3,3 +3,4 @@ __pycache__
 dask-worker-space
 *.mp4
 *.zarr
+.ipynb_checkpoints
