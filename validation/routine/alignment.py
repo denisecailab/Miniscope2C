@@ -1,9 +1,12 @@
+import re
+
 import numpy as np
+import pandas as pd
 import SimpleITK as sitk
-from .motion_correction import est_motion_perframe
+from minian.motion_correction import est_motion_perframe
 
 
-def apply_transform(fm: np.ndarray, tx: sitk.Transform, fill: float = 0):
+def apply_affine(fm: np.ndarray, tx: sitk.Transform, fill: float = 0):
     fm = sitk.GetImageFromArray(fm)
     fm = sitk.Resample(fm, fm, tx, sitk.sitkLinear, fill)
     return sitk.GetArrayFromImage(fm)
@@ -51,4 +54,9 @@ def est_affine(
     param_dict = dict()
     reg.AddCommand(sitk.sitkIterationEvent, lambda: it_callback(reg, param_dict))
     tx = reg.Execute(dst, src).Downcast()
-    return tx, param_dict
+    param_df = (
+        pd.Series(param_dict)
+        .reset_index(name="metric")
+        .rename(lambda c: re.sub("level_", "param_", c), axis="columns")
+    )
+    return tx, param_df
