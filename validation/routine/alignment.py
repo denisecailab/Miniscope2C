@@ -6,7 +6,7 @@ import SimpleITK as sitk
 from minian.motion_correction import est_motion_perframe
 
 
-def apply_transform(fm: np.ndarray, tx: sitk.Transform, fill: float = 0):
+def apply_affine(fm: np.ndarray, tx: sitk.Transform, fill: float = 0):
     fm = sitk.GetImageFromArray(fm)
     fm = sitk.Resample(fm, fm, tx, sitk.sitkLinear, fill)
     return sitk.GetArrayFromImage(fm)

@@ -7,7 +7,7 @@ import xarray as xr
 from dask.distributed import Client, LocalCluster
 from minian.utilities import TaskAnnotation, save_minian
 
-from routine.alignment import apply_transform, est_affine
+from routine.alignment import apply_affine, est_affine
 from routine.minian_pipeline import minian_process
 
 hv.notebook_extension("bokeh")
