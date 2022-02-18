@@ -1,9 +1,7 @@
 import os
-import pickle
 
 import holoviews as hv
 import numpy as np
-import xarray as xr
 from dask.distributed import Client, LocalCluster
 from minian.utilities import TaskAnnotation, save_minian
 
@@ -36,15 +34,15 @@ PARAM = {
         "method": "rolling",
         "stp_size": 500,
         "max_wnd": 15,
-        "diff_thres": 3,
+        "diff_thres": 6,
     },
-    "pnr_refine": {"noise_freq": 0.06, "thres": 1.3},
-    "seeds_merge": {"thres_dist": 15, "thres_corr": 0.75, "noise_freq": 0.06},
+    "pnr_refine": {"noise_freq": 0.06, "thres": 1},
+    "seeds_merge": {"thres_dist": 10, "thres_corr": 0.7, "noise_freq": 0.06},
     "initialize": {"thres_corr": 0.8, "wnd": 10, "noise_freq": 0.06},
     "init_merge": {"thres_corr": 0.8},
     "get_noise": {"noise_range": (0.06, 0.5)},
     "first_spatial": {
-        "dl_wnd": 10,
+        "dl_wnd": 5,
         "sparse_penal": 0.005,
         "size_thres": (25, None),
     },
