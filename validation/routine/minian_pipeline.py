@@ -176,6 +176,8 @@ def minian_process(
     )
     C = save_minian(C_new.rename("C"), intpath, overwrite=True)
     C_chk = save_minian(C_chk_new.rename("C_chk"), intpath, overwrite=True)
+    if return_stage == "first-spatial":
+        return A, C, b, f
     YrA = save_minian(
         compute_trace(Y_fm_chk, A, b, C_chk, f).rename("YrA"),
         intpath,
@@ -204,6 +206,8 @@ def minian_process(
         c0_new.rename("c0").chunk({"unit_id": 1, "frame": -1}), intpath, overwrite=True
     )
     A = A.sel(unit_id=C.coords["unit_id"].values)
+    if return_stage == "first-temporal":
+        return A, C, S, b, f
     ## merge
     try:
         A_mrg, C_mrg, [sig_mrg] = unit_merge(
@@ -245,6 +249,8 @@ def minian_process(
     )
     C = save_minian(C_new.rename("C"), intpath, overwrite=True)
     C_chk = save_minian(C_chk_new.rename("C_chk"), intpath, overwrite=True)
+    if return_stage == "second-spatial":
+        return A, C, S, b, f
     YrA = save_minian(
         compute_trace(Y_fm_chk, A, b, C_chk, f).rename("YrA"),
         intpath,
