@@ -5,17 +5,17 @@ import holoviews as hv
 import numpy as np
 import xarray as xr
 from dask.distributed import Client, LocalCluster
-from minian.utilities import TaskAnnotation, save_minian
+from minian.utilities import TaskAnnotation
 
 from routine.alignment import apply_affine, est_affine
 from routine.minian_pipeline import minian_process
 
 hv.notebook_extension("bokeh")
 
-IN_DPATH = "validation/data/2color_pilot_tdTomato/m00/2021_08_05/16_22_03"
+IN_DPATH = "validation/data/2color_pilot_mCherry/bench/2022_02_20/18_32_55"
 INT_PATH = "~/var/miniscope_2s/minian_int"
-OUT_TX = "validation/store/tx_tdTomato.pkl"
-OUT_FIG = "validation/output/tdTomato/alignment.html"
+OUT_TX = "validation/store/tx_mCherry.pkl"
+OUT_FIG = "validation/output/mCherry/alignment.html"
 INT_PATH = os.path.abspath(os.path.expanduser(INT_PATH))
 PARAM = {
     "load_videos": {"pattern": "\.avi$", "dtype": np.uint8},
@@ -26,23 +26,29 @@ PARAM = {
 }
 
 
-def align_preprocess(dpath, client, **kwargs):
+def align_preprocess(dpath, client, preprocess=True, template="max", **kwargs):
     save_path = os.path.join(dpath, "minian_ds")
     param = PARAM.copy()
     param["save_minian"] = {"dpath": save_path, "overwrite": True}
-    motion, va, va_chk = minian_process(
+    ret = "motion-correction" if preprocess else "load"
+    out = minian_process(
         dpath,
         INT_PATH,
         param=param,
-        return_stage="motion-correction",
+        return_stage=ret,
         client=client,
         glow_rm=False,
         **kwargs
     )
-    max_proj = save_minian(
-        va.max("frame").rename("max_proj"), save_path, overwrite=True
-    )
-    return max_proj.compute()
+    if preprocess:
+        va = out[1]
+    else:
+        va = out
+    if template == "max":
+        sum_fm = va.max("frame")
+    elif template == "mean":
+        sum_fm = va.mean("frame")
+    return sum_fm.rename("sum_fm").compute()
 
 
 if __name__ == "__main__":
@@ -58,13 +64,15 @@ if __name__ == "__main__":
     cluster.scheduler.add_plugin(annt_plugin)
     client = Client(cluster)
     top_path = os.path.join(IN_DPATH, "miniscope_top")
-    fm_top = align_preprocess(top_path, client)
+    fm_top = align_preprocess(top_path, client, preprocess=False, template="mean")
     side_path = os.path.join(IN_DPATH, "miniscope_side")
-    fm_side = align_preprocess(side_path, client, flip=True)
+    fm_side = align_preprocess(
+        side_path, client, flip=True, preprocess=False, template="mean"
+    )
     # compute alignment
     tx, param_df = est_affine(fm_side.values, fm_top.values, lr=1)
     fm_side_reg = xr.apply_ufunc(
-        apply_transform,
+        apply_affine,
         fm_side,
         input_core_dims=[["height", "width"]],
         output_core_dims=[["height", "width"]],
@@ -80,6 +88,7 @@ if __name__ == "__main__":
             **im_opts
         )
     ).cols(2)
+    os.makedirs(os.path.dirname(OUT_FIG), exist_ok=True)
     hv.save(hv_align, OUT_FIG)
     # save result
     os.makedirs(os.path.dirname(OUT_TX), exist_ok=True)
