@@ -63,37 +63,39 @@ def minian_process(
     else:
         del varr.encoding["chunks"]
     chk, _ = get_optimal_chk(varr, dtype=float)
-    varr = save_minian(
-        varr.chunk({"frame": chk["frame"], "height": -1, "width": -1}).rename("varr"),
-        intpath,
-        overwrite=True,
-    )
-    varr_ref = varr.sel(param["subset"])
-    # preprocessing
-    if glow_rm:
-        varr_min = varr_ref.min("frame").compute()
-        varr_ref = varr_ref - varr_min
-    varr_ref = denoise(varr_ref, **param["denoise"])
-    varr_ref = remove_background(varr_ref, **param["background_removal"])
     if flip:
-        varr_ref = xr.apply_ufunc(
+        varr = xr.apply_ufunc(
             darr.flip,
-            varr_ref,
+            varr,
             input_core_dims=[["frame", "height", "width"]],
             output_core_dims=[["frame", "height", "width"]],
             kwargs={"axis": 1},
             dask="allowed",
         )
     if tx is not None:
-        varr_ref = xr.apply_ufunc(
+        varr = xr.apply_ufunc(
             apply_affine,
-            varr_ref,
+            varr,
             input_core_dims=[["height", "width"]],
             output_core_dims=[["height", "width"]],
             kwargs={"tx": tx},
             vectorize=True,
             dask="parallelized",
         )
+    varr = save_minian(
+        varr.chunk({"frame": chk["frame"], "height": -1, "width": -1}).rename("varr"),
+        intpath,
+        overwrite=True,
+    )
+    varr_ref = varr.sel(param["subset"])
+    if return_stage == "load":
+        return varr
+    # preprocessing
+    if glow_rm:
+        varr_min = varr_ref.min("frame").compute()
+        varr_ref = varr_ref - varr_min
+    varr_ref = denoise(varr_ref, **param["denoise"])
+    varr_ref = remove_background(varr_ref, **param["background_removal"])
     varr_ref = save_minian(varr_ref.rename("varr_ref"), dpath=intpath, overwrite=True)
     if return_stage == "preprocessing":
         return varr_ref
