@@ -7,12 +7,10 @@ from minian.utilities import TaskAnnotation
 
 from routine.minian_pipeline import minian_process
 
-IN_DPATH = (
-    "validation/data/2color_pilot_tdTomato/m00/2021_08_05/16_22_03/miniscope_side"
-)
+IN_DPATH = "validation/data/2color_pilot_mCherry/m04/2022_02_21/14_16_26/miniscope_side"
 INT_PATH = "~/var/miniscope_2s/minian_int"
 INT_PATH = os.path.abspath(os.path.expanduser(INT_PATH))
-IN_TX = "validation/store/tx_tdTomato.pkl"
+IN_TX = "validation/store/tx_mCherry.pkl"
 PARAM = {
     "save_minian": {"meta_dict": None, "overwrite": True},
     "load_videos": {
@@ -22,8 +20,8 @@ PARAM = {
         "downsample_strategy": "subset",
     },
     "subset": None,
-    "denoise": {"method": "median", "ksize": 5},
-    "background_removal": {"method": "tophat", "wnd": 15},
+    "denoise": {"method": "median", "ksize": 3},
+    "background_removal": {"method": "tophat", "wnd": 10},
     "estimate_motion": {
         "dim": "frame",
         "aggregation": "mean",
@@ -37,14 +35,14 @@ PARAM = {
         "max_wnd": 15,
         "diff_thres": 3,
     },
-    "pnr_refine": {"noise_freq": 0.06, "thres": 1.3},
+    "pnr_refine": {"noise_freq": 0.06, "thres": 1.5},
     "seeds_merge": {"thres_dist": 15, "thres_corr": 0.75, "noise_freq": 0.06},
     "initialize": {"thres_corr": 0.8, "wnd": 10, "noise_freq": 0.06},
     "init_merge": {"thres_corr": 0.8},
     "get_noise": {"noise_range": (0.06, 0.5)},
     "first_spatial": {
         "dl_wnd": 10,
-        "sparse_penal": 0.005,
+        "sparse_penal": 0.01,
         "size_thres": (25, None),
     },
     "first_temporal": {
@@ -58,7 +56,7 @@ PARAM = {
     "first_merge": {"thres_corr": 0.8},
     "second_spatial": {
         "dl_wnd": 10,
-        "sparse_penal": 1e-3,
+        "sparse_penal": 5e-3,
         "size_thres": (25, None),
     },
     "second_temporal": {
@@ -81,7 +79,7 @@ def process_gfp(dpath, client, **kwargs):
 
 if __name__ == "__main__":
     cluster = LocalCluster(
-        n_workers=16,
+        n_workers=8,
         memory_limit="4GB",
         resources={"MEM": 1},
         threads_per_worker=2,

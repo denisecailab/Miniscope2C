@@ -9,7 +9,7 @@ from routine.minian_pipeline import minian_process
 
 hv.notebook_extension("bokeh")
 
-IN_DPATH = "validation/data/2color_pilot_tdTomato/m00/2021_08_05/16_22_03/miniscope_top"
+IN_DPATH = "validation/data/2color_pilot_mCherry/m04/2022_02_21/14_16_26/miniscope_top"
 INT_PATH = "~/var/miniscope_2s/minian_int"
 INT_PATH = os.path.abspath(os.path.expanduser(INT_PATH))
 PARAM = {
@@ -21,8 +21,8 @@ PARAM = {
         "downsample_strategy": "subset",
     },
     "subset": None,
-    "denoise": {"method": "median", "ksize": 5},
-    "background_removal": {"method": "tophat", "wnd": 15},
+    "denoise": {"method": "median", "ksize": 3},
+    "background_removal": {"method": "tophat", "wnd": 10},
     "estimate_motion": {
         "dim": "frame",
         "aggregation": "mean",
@@ -34,39 +34,17 @@ PARAM = {
         "method": "rolling",
         "stp_size": 500,
         "max_wnd": 15,
-        "diff_thres": 6,
+        "diff_thres": 8,
     },
-    "pnr_refine": {"noise_freq": 0.06, "thres": 1},
+    "pnr_refine": {"noise_freq": 0.06, "thres": 0},
     "seeds_merge": {"thres_dist": 10, "thres_corr": 0.7, "noise_freq": 0.06},
-    "initialize": {"thres_corr": 0.8, "wnd": 10, "noise_freq": 0.06},
+    "initialize": {"thres_corr": 0.9, "wnd": 10, "noise_freq": 0.06},
     "init_merge": {"thres_corr": 0.8},
     "get_noise": {"noise_range": (0.06, 0.5)},
     "first_spatial": {
-        "dl_wnd": 5,
+        "dl_wnd": 2,
         "sparse_penal": 0.005,
         "size_thres": (25, None),
-    },
-    "first_temporal": {
-        "noise_freq": 0.06,
-        "sparse_penal": 1,
-        "p": 1,
-        "add_lag": 20,
-        "jac_thres": 0.2,
-        "med_wd": 1000,
-    },
-    "first_merge": {"thres_corr": 0.8},
-    "second_spatial": {
-        "dl_wnd": 10,
-        "sparse_penal": 1e-3,
-        "size_thres": (25, None),
-    },
-    "second_temporal": {
-        "noise_freq": 0.06,
-        "sparse_penal": 0.5,
-        "p": 1,
-        "add_lag": 20,
-        "jac_thres": 0.4,
-        "med_wd": 1000,
     },
 }
 
@@ -91,7 +69,7 @@ def process_static(dpath, client, **kwargs):
 
 if __name__ == "__main__":
     cluster = LocalCluster(
-        n_workers=16,
+        n_workers=8,
         memory_limit="4GB",
         resources={"MEM": 1},
         threads_per_worker=2,
