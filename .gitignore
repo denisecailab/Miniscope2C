@@ -4,3 +4,4 @@ dask-worker-space
 *.mp4
 *.zarr
 .ipynb_checkpoints
+validation/notes/notes.html

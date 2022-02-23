@@ -1,0 +1,1 @@
+pandoc notes.md --template toc-sidebarL.html --self-contained -B nav --toc -o notes.html

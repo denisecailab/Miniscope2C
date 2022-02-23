@@ -103,14 +103,14 @@ plot_im(fm_ovly_max, ax_ovly_max)
 #     linewidth=0.7,
 # )
 # ax_ovly.add_patch(rect)
-hv.renderer("bokeh").theme = "dark_minimal"
+# hv.renderer("bokeh").theme = "dark_minimal"
 aspect = fm_top_pcolor.shape[1] / fm_top_pcolor.shape[0]
 opts_im = {
-    "frame_width": 480,
+    "frame_width": 380,
     "aspect": aspect,
     "xaxis": None,
     "yaxis": None,
-    "fontsize": {"title": 20},
+    "fontsize": {"title": 15},
 }
 hv_plt = (
     hv.RGB(fm_top_pcolor, ["width", "height"], label=TITLES["top"]).opts(**opts_im)
