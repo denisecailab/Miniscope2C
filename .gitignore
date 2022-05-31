@@ -5,3 +5,4 @@ dask-worker-space
 *.zarr
 .ipynb_checkpoints
 validation/notes/notes.html
+validation/store/*

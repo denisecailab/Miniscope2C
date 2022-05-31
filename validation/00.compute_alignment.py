@@ -16,6 +16,7 @@ IN_DPATH = "validation/data/2color_pilot_mCherry/bench/2022_02_21/13_02_06"
 INT_PATH = "~/var/miniscope_2s/minian_int"
 WORKER_PATH = "~/var/miniscope_2s/dask-worker-space"
 OUT_TX = "validation/store/tx_mCherry.pkl"
+OUT_DS = "validation/store/align_ds.nc"
 OUT_FIG = "validation/output/mCherry/alignment.html"
 INT_PATH = os.path.abspath(os.path.expanduser(INT_PATH))
 WORKER_PATH = os.path.abspath(os.path.expanduser(WORKER_PATH))
@@ -98,5 +99,13 @@ if __name__ == "__main__":
     hv.save(hv_align, OUT_FIG)
     # save result
     os.makedirs(os.path.dirname(OUT_TX), exist_ok=True)
+    ds = xr.merge(
+        [
+            fm_top.rename("fm_top"),
+            fm_side.rename("fm_side"),
+            fm_side_reg.rename("fm_side_reg"),
+        ]
+    )
+    ds.to_netcdf(OUT_DS)
     with open(OUT_TX, "wb") as pklf:
         pickle.dump(tx, pklf)
