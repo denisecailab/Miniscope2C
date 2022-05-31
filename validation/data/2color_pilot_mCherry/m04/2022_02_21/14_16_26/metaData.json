@@ -1,0 +1,22 @@
+{
+    "animalName": "m04",
+    "baseDirectory": "C:/Users/Tristan/Documents/phild/data/miniscope2s_mCherry/m04/2022_02_21/14_16_26",
+    "cameras": [
+    ],
+    "experimentName": "miniscope2s_mCherry",
+    "miniscopes": [
+        "miniscope_side",
+        "miniscope_top"
+    ],
+    "recordingStartTime": {
+        "day": 21,
+        "hour": 14,
+        "minute": 16,
+        "month": 2,
+        "msec": 997,
+        "msecSinceEpoch": 1645470986997,
+        "second": 26,
+        "year": 2022
+    },
+    "researcherName": ""
+}

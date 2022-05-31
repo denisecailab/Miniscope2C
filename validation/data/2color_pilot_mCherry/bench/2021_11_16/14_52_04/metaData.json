@@ -1,0 +1,22 @@
+{
+    "animalName": "bench",
+    "baseDirectory": "C:/Users/Tristan/Documents/phild/data/miniscope2s_mCherry/bench/2021_11_16/14_52_04",
+    "cameras": [
+    ],
+    "experimentName": "miniscope2s_mCherry",
+    "miniscopes": [
+        "miniscope_side",
+        "miniscope_top"
+    ],
+    "recordingStartTime": {
+        "day": 16,
+        "hour": 14,
+        "minute": 52,
+        "month": 11,
+        "msec": 576,
+        "msecSinceEpoch": 1637092324576,
+        "second": 4,
+        "year": 2021
+    },
+    "researcherName": ""
+}

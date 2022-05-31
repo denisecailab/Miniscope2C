@@ -1,0 +1,8 @@
+{
+    "compression": "MJPG",
+    "deviceDirectory": "C:/Users/Tristan/Documents/phild/data/miniscope_2s/pilot_lt0/m04/2022_02_18/11_04_42/behav_cam",
+    "deviceID": 6,
+    "deviceName": "behav_cam",
+    "deviceType": "WebCam",
+    "framesPerFile": 1000
+}

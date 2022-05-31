@@ -1,0 +1,23 @@
+{
+    "animalName": "m05",
+    "baseDirectory": "C:/Users/Tristan/Documents/phild/data/miniscope_2s/pilot_lt0/m05/2022_02_18/11_14_41",
+    "cameras": [
+        "behav_cam"
+    ],
+    "experimentName": "pilot_lt0",
+    "miniscopes": [
+        "miniscope_side",
+        "miniscope_top"
+    ],
+    "recordingStartTime": {
+        "day": 18,
+        "hour": 11,
+        "minute": 14,
+        "month": 2,
+        "msec": 955,
+        "msecSinceEpoch": 1645200881955,
+        "second": 41,
+        "year": 2022
+    },
+    "researcherName": ""
+}
