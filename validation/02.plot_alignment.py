@@ -10,7 +10,7 @@ from matplotlib import cm
 
 hv.notebook_extension("bokeh")
 
-IN_DSPATH = "store/align_ds.nc"
+IN_DSPATH = "./store/align_ds.nc"
 CLIP = (0, 50)
 BRT_OFFSET = 0
 OUTPATH = "./output/alignment/alignment"
