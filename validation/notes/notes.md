@@ -32,6 +32,11 @@ The miniscope_2s desgin, with two filter set configurations: GFP+mCherry and GFP
   We think that the mCherry virus might killed all the cells.
   We decided to not baseplate these animals.
 
+* GAD-Cre - flex-RCamp and CamKII-GCamp
+  The primary goal for this setup is to validate whether the scope can image two dynamic signals from two different population of neurons.
+  However, we could see neither red nor green signals during baseplating.
+  Slice imaging confirm there are good expression of GCamp under FOV.
+
 ## Data: GCamp_tdTomato_conjugated
 
 All mice were wild type and injected with `AAV1-hSyn-GCaMP6f-P2A-nls-dTomato` virus at stock concentration.
@@ -45,6 +50,12 @@ All mice were wild type and injected with `AAV1-hSyn-GCaMP6f-P2A-nls-dTomato` vi
 #### Confocal
 
 ![](../data/2color_pilot_tdTomato/m00/confocal/sld3-x1-y0-img0/overlay.svg){width="900px"}
+
+### cv03
+
+#### *in vivo* Imaging
+
+<embed type="text/html" src="../output/tdTomato/overlap/cv03.html" width="1200" height="900"></embed>
 
 ## Data: fosTTA-mCherry and syn-GCamp
 
@@ -63,3 +74,20 @@ We then take the animals off-dox for a few month and we have the following *in v
 #### *in vivo* Imaging
 
 <embed type="text/html" src="../output/mCherry/overlap/m04.html" width="1200" height="900"></embed>
+
+## Data: flex-RCamp and CamKII-GCamp
+
+Two GAD-Cre mice from collaborator lab are injected with `AAV1-CAG-FLEX-NEX-jRCaMP1a-WPRE-SV40` at $1.9 \times 10^{13} GC/mL$ for $250 nL/injection$ and `AAV1.CamKII.GCaMP6f.WPRE.SV40` at $1 \times 10^{13} vg/mL$ for $250 nL/injection$.
+
+### gc01
+
+#### Baseplating Imaging
+
+Couldn't see any signals.
+Unprocessed data can be found under data folder.
+
+### gc02
+
+#### Slice Imaging
+
+![](../data/2color_pilot_tdTomato/gc02/thunder/Project_Gad-cre_3_10X_crop.png){width="900px"}
