@@ -7,10 +7,10 @@ from minian.utilities import TaskAnnotation
 
 from routine.minian_pipeline import minian_process
 
-IN_DPATH = "validation/data/2color_pilot_mCherry/m04/2022_02_21/14_16_26/miniscope_side"
+IN_DPATH = "./data/2color_pilot_tdTomato/cv03/2022_05_31/13_13_23/miniscope_side"
 INT_PATH = "~/var/miniscope_2s/minian_int"
 INT_PATH = os.path.abspath(os.path.expanduser(INT_PATH))
-IN_TX = "validation/store/tx_mCherry.pkl"
+IN_TX = "./store/tx_tdTomato.pkl"
 PARAM = {
     "save_minian": {"meta_dict": None, "overwrite": True},
     "load_videos": {
@@ -21,7 +21,8 @@ PARAM = {
     },
     "subset": None,
     "denoise": {"method": "median", "ksize": 3},
-    "background_removal": {"method": "tophat", "wnd": 10},
+    "background_removal": {"method": "uniform", "wnd": 50},
+    "background_removal_it2": {"method": "tophat", "wnd": 15},
     "estimate_motion": {
         "dim": "frame",
         "aggregation": "mean",
@@ -33,7 +34,7 @@ PARAM = {
         "method": "rolling",
         "stp_size": 500,
         "max_wnd": 15,
-        "diff_thres": 3,
+        "diff_thres": 10,
     },
     "pnr_refine": {"noise_freq": 0.06, "thres": 1.5},
     "seeds_merge": {"thres_dist": 15, "thres_corr": 0.75, "noise_freq": 0.06},
@@ -90,6 +91,6 @@ if __name__ == "__main__":
     client = Client(cluster)
     with open(IN_TX, "rb") as pklf:
         tx = pickle.load(pklf)
-    process_gfp(IN_DPATH, client, flip=True, tx=tx)
+    process_gfp(IN_DPATH, client, flip=True, tx=tx, glow_rm=False)
     client.close()
     cluster.close()

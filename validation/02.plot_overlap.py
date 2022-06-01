@@ -10,10 +10,10 @@ from minian.utilities import open_minian
 
 hv.notebook_extension("bokeh")
 
-IN_DSPATH = "data/2color_pilot_tdTomato/m00/2021_08_05/16_22_03"
+IN_DSPATH = "./data/2color_pilot_tdTomato/cv03/2022_05_31/13_13_23"
 CLIP = (5, 25)
 BRT_OFFSET = 0
-OUTPATH = "./output/tdTomato/overlap/m00"
+OUTPATH = "./output/tdTomato/overlap/cv03"
 TITLES = {
     "top": "tdTomato",
     "side": "GCamp",

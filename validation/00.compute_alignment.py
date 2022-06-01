@@ -12,12 +12,12 @@ from routine.minian_pipeline import minian_process
 
 hv.notebook_extension("bokeh")
 
-IN_DPATH = "validation/data/2color_pilot_mCherry/bench/2022_02_21/13_02_06"
+IN_DPATH = "./data/2color_pilot_tdTomato/bench/2022_05_31/14_20_30"
 INT_PATH = "~/var/miniscope_2s/minian_int"
 WORKER_PATH = "~/var/miniscope_2s/dask-worker-space"
-OUT_TX = "validation/store/tx_mCherry.pkl"
-OUT_DS = "validation/store/align_ds.nc"
-OUT_FIG = "validation/output/mCherry/alignment.html"
+OUT_TX = "./store/tx_tdTomato.pkl"
+OUT_DS = "./store/align_ds.nc"
+OUT_FIG = "./output/tdTomato/alignment.html"
 INT_PATH = os.path.abspath(os.path.expanduser(INT_PATH))
 WORKER_PATH = os.path.abspath(os.path.expanduser(WORKER_PATH))
 PARAM = {

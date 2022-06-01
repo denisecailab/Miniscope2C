@@ -9,7 +9,7 @@ from routine.minian_pipeline import minian_process
 
 hv.notebook_extension("bokeh")
 
-IN_DPATH = "validation/data/2color_pilot_mCherry/m04/2022_02_21/14_16_26/miniscope_top"
+IN_DPATH = "./data/2color_pilot_tdTomato/cv03/2022_05_31/13_13_23/miniscope_top"
 INT_PATH = "~/var/miniscope_2s/minian_int"
 INT_PATH = os.path.abspath(os.path.expanduser(INT_PATH))
 PARAM = {
@@ -22,7 +22,8 @@ PARAM = {
     },
     "subset": None,
     "denoise": {"method": "median", "ksize": 3},
-    "background_removal": {"method": "tophat", "wnd": 10},
+    "background_removal": {"method": "uniform", "wnd": 50},
+    "background_removal_it2": {"method": "tophat", "wnd": 15},
     "estimate_motion": {
         "dim": "frame",
         "aggregation": "mean",
@@ -38,13 +39,13 @@ PARAM = {
     },
     "pnr_refine": {"noise_freq": 0.06, "thres": 0},
     "seeds_merge": {"thres_dist": 10, "thres_corr": 0.7, "noise_freq": 0.06},
-    "initialize": {"thres_corr": 0.9, "wnd": 10, "noise_freq": 0.06},
+    "initialize": {"thres_corr": 0.85, "wnd": 10, "noise_freq": 0.06},
     "init_merge": {"thres_corr": 0.8},
     "get_noise": {"noise_range": (0.06, 0.5)},
     "first_spatial": {
         "dl_wnd": 2,
-        "sparse_penal": 0.005,
-        "size_thres": (25, None),
+        "sparse_penal": 0,
+        "size_thres": (9, 400),
     },
 }
 
@@ -78,6 +79,6 @@ if __name__ == "__main__":
     annt_plugin = TaskAnnotation()
     cluster.scheduler.add_plugin(annt_plugin)
     client = Client(cluster)
-    process_static(IN_DPATH, client)
+    process_static(IN_DPATH, client, glow_rm=False)
     client.close()
     cluster.close()
