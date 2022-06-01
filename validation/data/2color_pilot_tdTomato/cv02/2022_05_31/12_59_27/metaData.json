@@ -1,0 +1,22 @@
+{
+    "animalName": "bench-tdTomato",
+    "baseDirectory": "C:/Users/phild/Documents/data/miniscope_2s/bench-tdTomato/2022_05_31/12_59_27",
+    "cameras": [
+    ],
+    "experimentName": "miniscope_2s",
+    "miniscopes": [
+        "miniscope_side",
+        "miniscope_top"
+    ],
+    "recordingStartTime": {
+        "day": 31,
+        "hour": 12,
+        "minute": 59,
+        "month": 5,
+        "msec": 376,
+        "msecSinceEpoch": 1654016367376,
+        "second": 27,
+        "year": 2022
+    },
+    "researcherName": ""
+}

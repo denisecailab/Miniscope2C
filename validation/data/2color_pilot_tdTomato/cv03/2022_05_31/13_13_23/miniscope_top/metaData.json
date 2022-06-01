@@ -1,0 +1,18 @@
+{
+    "ROI": {
+        "height": 600,
+        "leftEdge": 0,
+        "topEdge": 0,
+        "width": 600
+    },
+    "compression": "FFV1",
+    "deviceDirectory": "C:/Users/phild/Documents/data/miniscope_2s/bench-tdTomato/2022_05_31/13_13_23/miniscope_top",
+    "deviceID": 0,
+    "deviceName": "miniscope_top",
+    "deviceType": "Miniscope_V4_BNO",
+    "ewl": 50,
+    "frameRate": "30FPS",
+    "framesPerFile": 1000,
+    "gain": "Low",
+    "led0": 10
+}
