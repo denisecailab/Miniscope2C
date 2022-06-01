@@ -73,16 +73,6 @@ def minian_process(
             kwargs={"axis": 1},
             dask="allowed",
         )
-    if tx is not None:
-        varr = xr.apply_ufunc(
-            apply_affine,
-            varr,
-            input_core_dims=[["height", "width"]],
-            output_core_dims=[["height", "width"]],
-            kwargs={"tx": tx},
-            vectorize=True,
-            dask="parallelized",
-        )
     varr = save_minian(
         varr.chunk({"frame": chk["frame"], "height": -1, "width": -1}).rename("varr"),
         intpath,
@@ -104,6 +94,18 @@ def minian_process(
         )
     else:
         varr_ref = remove_background(varr_ref, **param["background_removal"])
+    if param.get("background_removal_it2"):
+        varr_ref = remove_background(varr_ref, **param["background_removal_it2"])
+    if tx is not None:
+        varr_ref = xr.apply_ufunc(
+            apply_affine,
+            varr_ref,
+            input_core_dims=[["height", "width"]],
+            output_core_dims=[["height", "width"]],
+            kwargs={"tx": tx},
+            vectorize=True,
+            dask="parallelized",
+        )
     varr_ref = save_minian(varr_ref.rename("varr_ref"), dpath=intpath, overwrite=True)
     if return_stage == "preprocessing":
         return varr_ref
