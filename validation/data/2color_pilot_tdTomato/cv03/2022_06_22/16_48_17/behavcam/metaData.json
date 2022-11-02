@@ -1,0 +1,14 @@
+{
+    "ROI": {
+        "height": 480,
+        "leftEdge": 0,
+        "topEdge": 0,
+        "width": 640
+    },
+    "compression": "MJPG",
+    "deviceDirectory": "F:/phild/miniscope2s_tdTomato_LT/cv03/2022_06_22/16_48_17/behavcam",
+    "deviceID": 4,
+    "deviceName": "behavcam",
+    "deviceType": "WebCam",
+    "framesPerFile": 1000
+}

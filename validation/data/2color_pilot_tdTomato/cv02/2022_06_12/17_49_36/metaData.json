@@ -1,0 +1,23 @@
+{
+    "animalName": "cv02",
+    "baseDirectory": "F:/phild/miniscope2s_tdTomato_LT/cv02/2022_06_12/17_49_36",
+    "cameras": [
+        "behavcam"
+    ],
+    "experimentName": "miniscope2s_tdTomato_LT",
+    "miniscopes": [
+        "miniscope_side",
+        "miniscope_top"
+    ],
+    "recordingStartTime": {
+        "day": 12,
+        "hour": 17,
+        "minute": 49,
+        "month": 6,
+        "msec": 73,
+        "msecSinceEpoch": 1655070576073,
+        "second": 36,
+        "year": 2022
+    },
+    "researcherName": ""
+}
