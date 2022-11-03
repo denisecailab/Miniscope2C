@@ -1,17 +1,19 @@
 experiment,animal,date,time,session,comments
 2color_pilot_tdTomato,bench,2021_06_28,14_56_08,,"microsphere testing, focal change and translations."
 2color_pilot_tdTomato,bench,2021_06_17,12_11_56,,"resolution target with 0.5mm grin lens, focal change and translations."
-2color_pilot_tdTomato,bench,2021_06_14,12_52_39,,"resolution target, focal change and translations."
+2color_pilot_tdTomato,bench,2021_06_14,12_52_39,res,"resolution target, focal change and translations."
 2color_pilot_tdTomato,bench,2021_06_08,12_08_29,,"resolution target with 1mm grin lens, focal change and translations."
 2color_pilot_tdTomato,bench,2021_06_03,14_59_32,,"resolution target with 1mm grin lens, focal change and translations."
 2color_pilot_tdTomato,bench,2021_06_29,11_35_30,,"microsphere testing, ewl sweep from 82 to 120 on a 2 sec interval"
 2color_pilot_tdTomato,bench,2021_06_29,11_38_22,,"microsphere testing, ewl sweep from -116 to -80 on a 2 sec interval"
-2color_pilot_tdTomato,m00,2021_08_05,12_27_59,,"baseplating recording"
-2color_pilot_tdTomato,m00,2021_08_05,16_22_03,,"awake recording right after baseplating"
-2color_pilot_mCherry,Will_baseplate,2021_01_29,15_13_59,,"mCherry scope testing on one of Will's GCamp animal during baseplating"
-2color_pilot_tdTomato,cv02,2022_05_24,13_02_49,,"baseplate imaging"
-2color_pilot_tdTomato,cv03,2022_05_24,13_57_05,,"baseplate imaging"
-2color_pilot_tdTomato,gc01,2022_05_26,12_27_35,,"baseplate imaging of the gad-cre animal"
-2color_pilot_tdTomato,bench,2022_05_31,14_20_30,,"calibration for the new tdTomato scope with adjustable side sensor"
-2color_pilot_tdTomato,cv02,2022_05_31,12_59_27,,"in vivarium imaging"
-2color_pilot_tdTomato,cv03,2022_05_31,13_13_23,,"in vivarium imaging"
+2color_pilot_tdTomato,m00,2021_08_05,12_27_59,,baseplating recording
+2color_pilot_tdTomato,m00,2021_08_05,16_22_03,,awake recording right after baseplating
+2color_pilot_mCherry,Will_baseplate,2021_01_29,15_13_59,,mCherry scope testing on one of Will's GCamp animal during baseplating
+2color_pilot_tdTomato,cv02,2022_05_24,13_02_49,,baseplate imaging
+2color_pilot_tdTomato,cv03,2022_05_24,13_57_05,,baseplate imaging
+2color_pilot_tdTomato,gc01,2022_05_26,12_27_35,,baseplate imaging of the gad-cre animal
+2color_pilot_tdTomato,bench,2022_05_31,14_20_30,,calibration for the new tdTomato scope with adjustable side sensor
+2color_pilot_tdTomato,cv02,2022_05_31,12_59_27,,in vivarium imaging
+2color_pilot_tdTomato,cv03,2022_05_31,13_13_23,,in vivarium imaging
+2color_pilot_tdTomato,bench,2022_08_03,23_35_33,res-grin,resolution target with 1mm grin lens; calibrated with grin; focal sweep
+2color_pilot_tdTomato,bench,2022_08_03,23_38_27,,resolution target; calibrated with grin; focal sweep
