@@ -3,21 +3,25 @@ import pickle
 
 import holoviews as hv
 import numpy as np
+import pandas as pd
 import xarray as xr
 from dask.distributed import Client, LocalCluster
 from minian.utilities import TaskAnnotation
 
 from routine.alignment import apply_affine, est_affine
-from routine.minian_pipeline import minian_process
+from routine.minian_pipeline import align_preprocess
 
 hv.notebook_extension("bokeh")
 
-IN_DPATH = "./data/2color_pilot_tdTomato/bench/2022_05_31/14_20_30"
+IN_DPATH = "./data"
+IN_SS_CSV = "./data/sessions.csv"
 INT_PATH = "~/var/miniscope_2s/minian_int"
 WORKER_PATH = "~/var/miniscope_2s/dask-worker-space"
-OUT_TX = "./store/tx_tdTomato.pkl"
-OUT_DS = "./store/align_ds.nc"
-OUT_FIG = "./output/tdTomato/alignment.html"
+# OUT_TX = "./store/tx_tdTomato.pkl"
+# OUT_DS = "./store/align_ds.nc"
+OUT_PATH = "./store/alignment"
+# OUT_FIG = "./output/tdTomato/alignment.html"
+FIG_PATH = "./output/alignment"
 INT_PATH = os.path.abspath(os.path.expanduser(INT_PATH))
 WORKER_PATH = os.path.abspath(os.path.expanduser(WORKER_PATH))
 PARAM = {
@@ -27,85 +31,89 @@ PARAM = {
     "background_removal": {"method": "uniform", "wnd": 50},
     "estimate_motion": {"dim": "frame"},
 }
-
-
-def align_preprocess(
-    dpath, client, return_stage="motion-correction", template="max", **kwargs
-):
-    save_path = os.path.join(dpath, "minian_ds")
-    param = PARAM.copy()
-    param["save_minian"] = {"dpath": save_path, "overwrite": True}
-    out = minian_process(
-        dpath,
-        INT_PATH,
-        param=param,
-        return_stage=return_stage,
-        client=client,
-        glow_rm=False,
-        **kwargs
-    )
-    if return_stage == "motion-correction":
-        va = out[1]
-    else:
-        va = out
-    if template == "max":
-        sum_fm = va.max("frame")
-    elif template == "mean":
-        sum_fm = va.mean("frame")
-    return sum_fm.rename("sum_fm").compute()
+PARAM_SPECIFIC = {
+    "res": {"subset": {"frame": slice(0, 1000)}},
+    "res-grin": {"subset": {"frame": slice(500, 510)}},
+}
+os.makedirs(OUT_PATH, exist_ok=True)
+os.makedirs(FIG_PATH, exist_ok=True)
 
 
 if __name__ == "__main__":
-    # load data and preprocess
-    cluster = LocalCluster(
-        n_workers=4,
-        memory_limit="16GB",
-        resources={"MEM": 1},
-        threads_per_worker=2,
-        dashboard_address="0.0.0.0:12345",
-        local_directory=WORKER_PATH,
-    )
-    annt_plugin = TaskAnnotation()
-    cluster.scheduler.add_plugin(annt_plugin)
-    client = Client(cluster)
-    top_path = os.path.join(IN_DPATH, "miniscope_top")
-    fm_top = align_preprocess(
-        top_path, client, return_stage="preprocessing", template="mean"
-    )
-    side_path = os.path.join(IN_DPATH, "miniscope_side")
-    fm_side = align_preprocess(
-        side_path, client, flip=True, return_stage="preprocessing", template="mean"
-    )
-    # compute alignment
-    tx, param_df = est_affine(fm_side.values, fm_top.values, lr=1)
-    fm_side_reg = xr.apply_ufunc(
-        apply_affine,
-        fm_side,
-        input_core_dims=[["height", "width"]],
-        output_core_dims=[["height", "width"]],
-        kwargs={"tx": tx},
-    )
-    # plot result
-    im_opts = {"cmap": "viridis"}
-    hv_align = (
-        hv.Image(fm_top, ["width", "height"], label="top").opts(**im_opts)
-        + hv.Image(fm_side, ["width", "height"], label="side").opts(**im_opts)
-        + hv.Image(fm_side_reg, ["width", "height"], label="side_reg").opts(**im_opts)
-        + hv.Image((fm_side_reg - fm_top), ["width", "height"], label="affine").opts(
-            **im_opts
+    ss_csv = pd.read_csv(IN_SS_CSV)
+    ss_csv = ss_csv[ss_csv["session"].notnull()].copy()
+    for _, row in ss_csv.iterrows():
+        # handle paths
+        dpath = os.path.join(
+            IN_DPATH, row["experiment"], row["animal"], row["date"], row["time"]
         )
-    ).cols(2)
-    os.makedirs(os.path.dirname(OUT_FIG), exist_ok=True)
-    hv.save(hv_align, OUT_FIG)
-    # save result
-    os.makedirs(os.path.dirname(OUT_TX), exist_ok=True)
-    ds = xr.merge(
-        [
-            fm_top.rename("fm_top"),
-            fm_side.rename("fm_side"),
-            fm_side_reg.rename("fm_side_reg"),
-        ]
-    )
-    ds.to_netcdf(OUT_DS)
-    with open(OUT_TX, "wb") as pklf:
-        pickle.dump(tx, pklf)
+        ss = row["session"]
+        anm = row["animal"]
+        # load data and preprocess
+        cluster = LocalCluster(
+            n_workers=4,
+            memory_limit="16GB",
+            resources={"MEM": 1},
+            threads_per_worker=2,
+            dashboard_address="0.0.0.0:12345",
+            local_directory=WORKER_PATH,
+        )
+        annt_plugin = TaskAnnotation()
+        cluster.scheduler.add_plugin(annt_plugin)
+        client = Client(cluster)
+        param = PARAM.copy()
+        param.update(PARAM_SPECIFIC[ss])
+        top_path = os.path.join(dpath, "miniscope_top")
+        fm_top = align_preprocess(
+            top_path,
+            client,
+            INT_PATH,
+            param=param,
+            return_stage="preprocessing",
+            template="mean",
+        )
+        side_path = os.path.join(dpath, "miniscope_side")
+        fm_side = align_preprocess(
+            side_path,
+            client,
+            INT_PATH,
+            param=param,
+            flip=True,
+            return_stage="preprocessing",
+            template="mean",
+        )
+        # compute alignment
+        tx, param_df = est_affine(fm_side.values, fm_top.values, lr=1)
+        fm_side_reg = xr.apply_ufunc(
+            apply_affine,
+            fm_side,
+            input_core_dims=[["height", "width"]],
+            output_core_dims=[["height", "width"]],
+            kwargs={"tx": tx},
+        )
+        # plot result
+        im_opts = {"cmap": "viridis"}
+        hv_align = (
+            hv.Image(fm_top, ["width", "height"], label="top").opts(**im_opts)
+            + hv.Image(fm_side, ["width", "height"], label="side").opts(**im_opts)
+            + hv.Image(fm_side_reg, ["width", "height"], label="side_reg").opts(
+                **im_opts
+            )
+            + hv.Image(
+                (fm_side_reg - fm_top), ["width", "height"], label="affine"
+            ).opts(**im_opts)
+        ).cols(2)
+        hv.save(hv_align, os.path.join(FIG_PATH, "{}-{}.html".format(anm, ss)))
+        # save result
+        ds = xr.merge(
+            [
+                fm_top.rename("fm_top"),
+                fm_side.rename("fm_side"),
+                fm_side_reg.rename("fm_side_reg"),
+            ]
+        )
+        ds.to_netcdf(os.path.join(OUT_PATH, "{}-{}.nc".format(anm, ss)))
+        with open(os.path.join(OUT_PATH, "{}-{}.pkl".format(anm, ss)), "wb") as pklf:
+            pickle.dump(tx, pklf)
+        cluster.close()
+        client.close()

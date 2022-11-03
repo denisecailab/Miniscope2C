@@ -302,3 +302,32 @@ def minian_process(
     # generate video
     generate_videos(varr, Y_fm_chk, A=A, C=C_chk, vpath=dpath)
     return A, C, S, b, f
+
+
+def align_preprocess(
+    dpath,
+    client,
+    intpath,
+    param,
+    return_stage="motion-correction",
+    template="max",
+    **kwargs
+):
+    out = minian_process(
+        dpath,
+        intpath,
+        param=param,
+        return_stage=return_stage,
+        client=client,
+        glow_rm=False,
+        **kwargs
+    )
+    if return_stage == "motion-correction":
+        va = out[1]
+    else:
+        va = out
+    if template == "max":
+        sum_fm = va.max("frame")
+    elif template == "mean":
+        sum_fm = va.mean("frame")
+    return sum_fm.rename("sum_fm").compute()
