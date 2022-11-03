@@ -17,12 +17,15 @@ def norm(x: np.ndarray):
         return x
 
 
-def norm_xr(x: xr.DataArray):
+def norm_xr(x: xr.DataArray, q=1):
     xmin = x.min().compute().values
-    xmax = x.max().compute().values
+    if q < 1:
+        xmax = x.compute().quantile(q).compute().values
+    else:
+        xmax = x.max().compute().values
     diff = xmax - xmin
     if diff > 0:
-        return (x - xmin) / diff
+        return ((x - xmin) / diff).clip(0, 1)
     else:
         return x
 
