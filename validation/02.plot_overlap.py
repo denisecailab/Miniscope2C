@@ -10,7 +10,7 @@ from minian.utilities import open_minian
 
 hv.notebook_extension("bokeh")
 
-IN_DSPATH = "./data/2color_pilot_tdTomato/cv03/2022_05_31/13_13_23"
+IN_DSPATH = "./data/2color_pilot_tdTomato/cv03/2022_06_21/16_01_56"
 CLIP = (5, 25)
 BRT_OFFSET = 0
 OUTPATH = "./output/tdTomato/overlap/cv03"
@@ -21,20 +21,24 @@ TITLES = {
     "top_max": "tdTomato Max Projection",
     "ovly_max": "Overlay",
 }
+SUBSET = {"height": slice(100 - 25, 349 + 25), "width": slice(240 - 25, 479 + 25)}
 
 #%% load data
 fm_side = (
     open_minian(os.path.join(IN_DSPATH, "miniscope_side", "minian_ds"))["A"]
+    .sel(**SUBSET)
     .max("unit_id")
     .compute()
 )
 fm_top = (
     open_minian(os.path.join(IN_DSPATH, "miniscope_top", "minian_ds"))["A"]
+    .sel(**SUBSET)
     .max("unit_id")
     .compute()
 )
 fm_top_max = (
     open_minian(os.path.join(IN_DSPATH, "miniscope_top", "minian_ds"))["max_proj"]
+    .sel(**SUBSET)
     .clip(*CLIP)
     .compute()
 )
@@ -129,17 +133,21 @@ os.makedirs(os.path.dirname(OUTPATH), exist_ok=True)
 hv.save(hv_plt, OUTPATH + ".html")
 fig.savefig(OUTPATH + ".svg")
 
-# fig_top, ax_top = plt.subplots(1, 1, dpi=500)
-# ax_top.set_title("tdTomato")
-# plot_im(fm_top_pcolor, ax_top)
-# fig_top.savefig(os.path.join(OUTPATH, "tdTomato.png"))
+os.makedirs(OUTPATH, exist_ok=True)
+fig_top, ax_top = plt.subplots(1, 1, dpi=500, figsize=(5, 5))
+ax_top.set_title("tdTomato")
+plot_im(fm_top_max_pcolor, ax_top)
+fig_top.tight_layout(pad=0.1)
+fig_top.savefig(os.path.join(OUTPATH, "tdTomato.png"))
 
-# fig_side, ax_side = plt.subplots(1, 1, dpi=500)
-# ax_side.set_title("GCamp")
-# plot_im(fm_side_pcolor, ax_side)
-# fig_side.savefig(os.path.join(OUTPATH, "GCamp.png"))
+fig_side, ax_side = plt.subplots(1, 1, dpi=500, figsize=(5, 5))
+ax_side.set_title("GCaMP")
+plot_im(fm_side_pcolor, ax_side)
+fig_side.tight_layout(pad=0.1)
+fig_side.savefig(os.path.join(OUTPATH, "GCamp.png"))
 
-# fig_ovly, ax_ovly = plt.subplots(1, 1, dpi=500)
-# ax_ovly.set_title("Overlay")
-# plot_im(fm_ovly, ax_ovly)
-# fig_ovly.savefig(os.path.join(OUTPATH, "overlay.png"))
+fig_ovly, ax_ovly = plt.subplots(1, 1, dpi=500, figsize=(5, 5))
+ax_ovly.set_title("Overlay")
+plot_im(fm_ovly_max, ax_ovly)
+fig_ovly.tight_layout(pad=0.1)
+fig_ovly.savefig(os.path.join(OUTPATH, "overlay.png"))
