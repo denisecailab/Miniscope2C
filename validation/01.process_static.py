@@ -2,6 +2,7 @@ import os
 
 import holoviews as hv
 import numpy as np
+import cv2
 from dask.distributed import Client, LocalCluster
 from minian.utilities import TaskAnnotation, save_minian
 
@@ -9,8 +10,8 @@ from routine.minian_pipeline import minian_process
 
 hv.notebook_extension("bokeh")
 
-IN_DPATH = "./data/2color_pilot_tdTomato/cv03/2022_05_31/13_13_23/miniscope_top"
-INT_PATH = "~/var/miniscope_2s/minian_int"
+IN_DPATH = "./data/2color_pilot_tdTomato/cv03/2022_06_21/16_01_56/miniscope_top"
+INT_PATH = "~/var/miniscope_2s/top_int"
 INT_PATH = os.path.abspath(os.path.expanduser(INT_PATH))
 PARAM = {
     "save_minian": {"meta_dict": None, "overwrite": True},
@@ -20,7 +21,7 @@ PARAM = {
         "downsample": dict(frame=1, height=1, width=1),
         "downsample_strategy": "subset",
     },
-    "subset": None,
+    "subset": {"frame": slice(0, 2999)},
     "denoise": {"method": "median", "ksize": 3},
     "background_removal": {"method": "uniform", "wnd": 50},
     "background_removal_it2": {"method": "tophat", "wnd": 15},
@@ -40,7 +41,6 @@ PARAM = {
     "pnr_refine": {"noise_freq": 0.06, "thres": 0},
     "seeds_merge": {"thres_dist": 10, "thres_corr": 0.7, "noise_freq": 0.06},
     "initialize": {"thres_corr": 0.85, "wnd": 10, "noise_freq": 0.06},
-    "init_merge": {"thres_corr": 0.8},
     "get_noise": {"noise_range": (0.06, 0.5)},
     "first_spatial": {
         "dl_wnd": 2,
@@ -71,7 +71,7 @@ def process_static(dpath, client, **kwargs):
 if __name__ == "__main__":
     cluster = LocalCluster(
         n_workers=8,
-        memory_limit="4GB",
+        memory_limit="8GB",
         resources={"MEM": 1},
         threads_per_worker=2,
         dashboard_address="0.0.0.0:12345",

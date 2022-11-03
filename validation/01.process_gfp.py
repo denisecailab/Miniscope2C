@@ -7,10 +7,10 @@ from minian.utilities import TaskAnnotation
 
 from routine.minian_pipeline import minian_process
 
-IN_DPATH = "./data/2color_pilot_tdTomato/cv03/2022_05_31/13_13_23/miniscope_side"
-INT_PATH = "~/var/miniscope_2s/minian_int"
+IN_DPATH = "./data/2color_pilot_tdTomato/cv03/2022_06_21/16_01_56/miniscope_side"
+INT_PATH = "~/var/miniscope_2s/side_int"
 INT_PATH = os.path.abspath(os.path.expanduser(INT_PATH))
-IN_TX = "./store/tx_tdTomato.pkl"
+IN_TX = "./store/tx_tdTomato_test.pkl"
 PARAM = {
     "save_minian": {"meta_dict": None, "overwrite": True},
     "load_videos": {
@@ -19,7 +19,7 @@ PARAM = {
         "downsample": dict(frame=1, height=1, width=1),
         "downsample_strategy": "subset",
     },
-    "subset": None,
+    "subset": {"frame": slice(0, 2999)},
     "denoise": {"method": "median", "ksize": 3},
     "background_removal": {"method": "uniform", "wnd": 50},
     "background_removal_it2": {"method": "tophat", "wnd": 15},
@@ -34,7 +34,7 @@ PARAM = {
         "method": "rolling",
         "stp_size": 500,
         "max_wnd": 15,
-        "diff_thres": 10,
+        "diff_thres": 8,
     },
     "pnr_refine": {"noise_freq": 0.06, "thres": 1.5},
     "seeds_merge": {"thres_dist": 15, "thres_corr": 0.75, "noise_freq": 0.06},
@@ -62,7 +62,7 @@ PARAM = {
     },
     "second_temporal": {
         "noise_freq": 0.06,
-        "sparse_penal": 0.5,
+        "sparse_penal": 1,
         "p": 1,
         "add_lag": 20,
         "jac_thres": 0.4,
@@ -81,7 +81,7 @@ def process_gfp(dpath, client, **kwargs):
 if __name__ == "__main__":
     cluster = LocalCluster(
         n_workers=8,
-        memory_limit="4GB",
+        memory_limit="8GB",
         resources={"MEM": 1},
         threads_per_worker=2,
         dashboard_address="0.0.0.0:12345",
