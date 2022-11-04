@@ -1,9 +1,7 @@
 #%% imports and definition
 import os
 
-import holoviews as hv
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
 import xarray as xr
 
@@ -25,7 +23,6 @@ PARAM_BRT_OFFSET = 0
 PARAM_SUBSET = {"height": slice(100 - 25, 349 + 25), "width": slice(240 - 25, 479 + 25)}
 FIG_PATH = "./output/overlap"
 
-hv.notebook_extension("bokeh")
 plt.rcParams.update(**PARAM_FONT)
 os.makedirs(FIG_PATH, exist_ok=True)
 
@@ -52,7 +49,7 @@ for _, row in ss_csv.iterrows():
     im_red, im_green, im_ovly = pcolor_ovly(
         im_red, im_green, brt_offset=PARAM_BRT_OFFSET
     )
-    fig, axs = plt.subplots(1, 3, figsize=(8.5, 8.5 / PARAM_ASPECT), dpi=500)
+    fig, axs = plt.subplots(1, 3, figsize=(5.5, 5.5 / PARAM_ASPECT), dpi=800)
     ax_dict = {"red": axs[0], "green": axs[1], "ovly": axs[2]}
     im_dict = {"red": im_red, "green": im_green, "ovly": im_ovly}
     for aname, ax in ax_dict.items():
