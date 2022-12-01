@@ -16,8 +16,8 @@ PARAM_ASPECT = 1.4
 PARAM_FONT = {"axes.titlesize": 11, "font.sans-serif": "Arial"}
 PARAM_TITLES = {"red": "Red Channel", "green": "Green Channel", "ovly": "Overlay"}
 PARAM_PS = {
-    "res": {"flip": True, "clip_red": (0, 80), "clip_green": (0, 100)},
-    "res-grin": {"clip_red": (0, 100), "clip_green": (0, 180)},
+    "res": {"flip": True, "clip_red": (0, 40), "clip_green": (0, 50)},
+    "res-grin": {"clip_red": (0, 60), "clip_green": (0, 120)},
 }
 PARAM_BRT_OFFSET = 0
 PARAM_SUBSET = {"height": slice(100 - 25, 349 + 25), "width": slice(240 - 25, 479 + 25)}
@@ -26,7 +26,7 @@ FIG_PATH = "./output/overlap"
 plt.rcParams.update(**PARAM_FONT)
 os.makedirs(FIG_PATH, exist_ok=True)
 
-#%% load data
+#%% load data and plot
 ss_csv = pd.read_csv(IN_SS_CSV)
 ss_csv = ss_csv[ss_csv["session"].notnull()].copy()
 for _, row in ss_csv.iterrows():
@@ -45,7 +45,7 @@ for _, row in ss_csv.iterrows():
         im_red = im_red.clip(*clip_red)
     clip_green = param.get("clip_green", None)
     if clip_green is not None:
-        im_red = im_red.clip(*clip_green)
+        im_green = im_green.clip(*clip_green)
     im_red, im_green, im_ovly = pcolor_ovly(
         im_red, im_green, brt_offset=PARAM_BRT_OFFSET
     )
