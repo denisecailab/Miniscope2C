@@ -27,15 +27,20 @@ w_gap = 15
 h_gap = 5
 sh_left = (0, 0)
 panA = make_panel("A", "../drawings/miniscope_2s_lightpath_filters.svg", sh=sh_left)
-panB = make_panel("B", "../validation/output/overlap/bench-res.svg", sh=sh_left)
-panC = make_panel("C", "../validation/output/overlap/bench-res-grin.svg", sh=sh_left)
-fig_h = panA.height + panB.height + panC.height + 2 * h_gap
-fig_w = max(panA.width, panB.width, panC.width)
+panB = make_panel("B", "../drawings/slide.svg", sh=sh_left, im_scale=0.4)
+panC = make_panel("C", "../validation/output/overlap/bench-res.svg", sh=sh_left)
+panD = make_panel("D", "../validation/output/overlap/bench-res-grin.svg", sh=sh_left)
+fig_h = panA.height + panB.height + panC.height + panD.height + 3 * h_gap
+fig_w = max(panA.width, panB.width, panC.width, panD.width)
 fig = Figure(
     fig_w,
     fig_h,
     panA.move(x=(fig_w - panA.width) / 2, y=0),
     panB.move(x=(fig_w - panB.width) / 2, y=panA.height + h_gap),
     panC.move(x=(fig_w - panC.width) / 2, y=panA.height + panB.height + 2 * h_gap),
+    panD.move(
+        x=(fig_w - panD.width) / 2,
+        y=panA.height + panB.height + panC.height + 3 * h_gap,
+    ),
 )
 fig.save(os.path.join(OUT_PATH, "fig1.svg"))
