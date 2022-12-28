@@ -4,7 +4,7 @@ import os
 import matplotlib.pyplot as plt
 import pandas as pd
 import xarray as xr
-
+from mpl_toolkits.axes_grid1.anchored_artists import AnchoredSizeBar
 from routine.plotting import pcolor_ovly
 
 IN_GREEN_PATH = "./store/alignment"
@@ -56,6 +56,18 @@ for _, row in ss_csv.iterrows():
         ax.set_title(PARAM_TITLES[aname])
         ax.imshow(im_dict[aname])
         ax.set_axis_off()
+    scalebar = AnchoredSizeBar(
+        ax.transData,
+        50 / 1.55,
+        r"$50 \mu m$",
+        "lower right",
+        pad=0.1,
+        sep=4,
+        color="white",
+        frameon=False,
+        size_vertical=2,
+    )
+    ax_dict["ovly"].add_artist(scalebar)
     fig.tight_layout()
     fig.savefig(
         os.path.join(FIG_PATH, "{}-{}.svg".format(anm, ss)), bbox_inches="tight"
