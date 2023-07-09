@@ -7,7 +7,6 @@ import pandas as pd
 import xarray as xr
 from dask.distributed import Client, LocalCluster
 from minian.utilities import TaskAnnotation
-
 from routine.alignment import apply_affine, est_affine
 from routine.minian_pipeline import align_preprocess
 
@@ -28,7 +27,7 @@ PARAM = {
     "load_videos": {"pattern": "\.avi$", "dtype": np.uint8},
     "subset": None,
     "denoise": {"method": "median", "ksize": 3},
-    "background_removal": {"method": "uniform", "wnd": 50},
+    # "background_removal": {"method": "uniform", "wnd": 50},
     "estimate_motion": {"dim": "frame"},
 }
 PARAM_SPECIFIC = {

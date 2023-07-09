@@ -86,14 +86,15 @@ def minian_process(
         varr_min = varr_ref.min("frame").compute()
         varr_ref = varr_ref - varr_min
     varr_ref = denoise(varr_ref, **param["denoise"])
-    if param["background_removal"]["method"] == "uniform":
-        varr_ref = (
-            remove_background(varr_ref.astype(float), **param["background_removal"])
-            .clip(0, 255)
-            .astype(np.uint8)
-        )
-    else:
-        varr_ref = remove_background(varr_ref, **param["background_removal"])
+    if param.get("background_removal"):
+        if param["background_removal"]["method"] == "uniform":
+            varr_ref = (
+                remove_background(varr_ref.astype(float), **param["background_removal"])
+                .clip(0, 255)
+                .astype(np.uint8)
+            )
+        else:
+            varr_ref = remove_background(varr_ref, **param["background_removal"])
     if param.get("background_removal_it2"):
         varr_ref = remove_background(varr_ref, **param["background_removal_it2"])
     if tx is not None:

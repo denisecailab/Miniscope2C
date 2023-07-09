@@ -1,4 +1,4 @@
-#%% imports and definition
+# %% imports and definition
 import os
 
 from svgutils.compose import SVG, Figure, Image, Panel, Text
@@ -31,7 +31,7 @@ def make_panel(
     return pan
 
 
-#%% make design figure
+# %% make design figure
 w_gap = 25
 h_gap = 10
 sh_left = (15, 0)
@@ -66,7 +66,7 @@ fig = Figure(
 )
 fig.save(os.path.join(OUT_PATH, "miniscope_2s-design.svg"))
 
-#%% make slide figure
+# %% make slide figure
 w_gap = 15
 h_gap = 5
 sh_left = (0, 0)
