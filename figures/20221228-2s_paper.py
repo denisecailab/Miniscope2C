@@ -45,7 +45,7 @@ panB = make_panel(
     is_svg=False,
     width=1767,
     height=2469,
-    im_scale=0.095,
+    im_scale=0.094,
 )
 panC = make_panel(
     "C",
