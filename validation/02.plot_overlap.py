@@ -1,9 +1,10 @@
-#%% imports and definition
+# %% imports and definition
 import os
 
 import matplotlib.pyplot as plt
 import pandas as pd
 import xarray as xr
+from matplotlib.patches import ConnectionPatch
 from mpl_toolkits.axes_grid1.anchored_artists import AnchoredSizeBar
 from routine.plotting import pcolor_ovly
 
@@ -26,9 +27,13 @@ FIG_PATH = "./output/overlap"
 plt.rcParams.update(**PARAM_FONT)
 os.makedirs(FIG_PATH, exist_ok=True)
 
-#%% load data and plot
+# %% load data and plot
 ss_csv = pd.read_csv(IN_SS_CSV)
 ss_csv = ss_csv[ss_csv["session"].notnull()].copy()
+zm_ext = {
+    "res": [(322, 402, 343, 423), (455, 535, 148, 228)],
+    "res-grin": [(295, 375, 285, 365), (420, 500, 90, 170)],
+}
 for _, row in ss_csv.iterrows():
     anm, ss = row["animal"], row["session"]
     green_ds = xr.open_dataset(os.path.join(IN_GREEN_PATH, "{}-{}.nc".format(anm, ss)))
@@ -60,7 +65,7 @@ for _, row in ss_csv.iterrows():
         ax.transData,
         50 / 1.55,
         r"$50 \mu m$",
-        "lower right",
+        "lower left",
         pad=0.1,
         sep=4,
         color="white",
@@ -68,6 +73,48 @@ for _, row in ss_csv.iterrows():
         size_vertical=2,
     )
     ax_dict["ovly"].add_artist(scalebar)
+    for iext, ext in enumerate(zm_ext[ss]):
+        x1, x2, y1, y2 = ext
+        axins = ax_dict["ovly"].inset_axes(
+            (1.03, iext * 0.53, 0.47, 0.47),
+            xlim=(x1, x2),
+            ylim=(y2, y1),
+            xticklabels=[],
+            yticklabels=[],
+        )
+        axins.set_axis_off()
+        axins.imshow(im_dict["ovly"], origin="lower", aspect="auto")
+        box = ax_dict["ovly"].indicate_inset(
+            (x1, y1, x2 - x1, y2 - y1),
+            edgecolor="white",
+            transform=ax_dict["ovly"].transData,
+            alpha=1,
+            lw=0.8,
+        )
+        cp1 = ConnectionPatch(
+            xyA=(x2, y1),
+            xyB=(0, 1),
+            axesA=ax_dict["ovly"],
+            axesB=axins,
+            coordsA="data",
+            coordsB="axes fraction",
+            lw=0.8,
+            color="silver",
+            ls=(0, (1, 3)),
+        )
+        cp2 = ConnectionPatch(
+            xyA=(x2, y2),
+            xyB=(0, 0),
+            axesA=ax_dict["ovly"],
+            axesB=axins,
+            coordsA="data",
+            coordsB="axes fraction",
+            lw=0.8,
+            color="silver",
+            ls=(0, (1, 3)),
+        )
+        ax_dict["ovly"].add_patch(cp1)
+        ax_dict["ovly"].add_patch(cp2)
     fig.tight_layout()
     fig.savefig(
         os.path.join(FIG_PATH, "{}-{}.svg".format(anm, ss)), bbox_inches="tight"
