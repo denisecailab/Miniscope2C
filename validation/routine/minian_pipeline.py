@@ -301,7 +301,7 @@ def minian_process(
     b = save_minian(b.rename("b"), **param["save_minian"])
     f = save_minian(f.rename("f"), **param["save_minian"])
     # generate video
-    generate_videos(varr, Y_fm_chk, A=A, C=C_chk, vpath=dpath)
+    # generate_videos(varr, Y_fm_chk, A=A, C=C_chk, vpath=dpath)
     return A, C, S, b, f
 
 
