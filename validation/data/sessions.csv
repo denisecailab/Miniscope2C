@@ -17,3 +17,4 @@ experiment,animal,date,time,session,comments
 2color_pilot_tdTomato,cv03,2022_05_31,13_13_23,,in vivarium imaging
 2color_pilot_tdTomato,bench,2022_08_03,23_35_33,res-grin,resolution target with 1mm grin lens; calibrated with grin; focal sweep
 2color_pilot_tdTomato,bench,2022_08_03,23_38_27,,resolution target; calibrated with grin; focal sweep
+2color_pilot_tdTomato,cv03,2022_06_21,16_01_56,rec0,example session for in-vivo experiment

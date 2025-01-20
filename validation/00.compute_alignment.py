@@ -16,10 +16,7 @@ IN_DPATH = "./data"
 IN_SS_CSV = "./data/sessions.csv"
 INT_PATH = "~/var/miniscope_2s/minian_int"
 WORKER_PATH = "~/var/miniscope_2s/dask-worker-space"
-# OUT_TX = "./store/tx_tdTomato.pkl"
-# OUT_DS = "./store/align_ds.nc"
 OUT_PATH = "./store/alignment"
-# OUT_FIG = "./output/tdTomato/alignment.html"
 FIG_PATH = "./output/alignment"
 INT_PATH = os.path.abspath(os.path.expanduser(INT_PATH))
 WORKER_PATH = os.path.abspath(os.path.expanduser(WORKER_PATH))
@@ -27,12 +24,15 @@ PARAM = {
     "load_videos": {"pattern": "\.avi$", "dtype": np.uint8},
     "subset": None,
     "denoise": {"method": "median", "ksize": 3},
-    # "background_removal": {"method": "uniform", "wnd": 50},
     "estimate_motion": {"dim": "frame"},
 }
 PARAM_SPECIFIC = {
     "res": {"subset": {"frame": slice(0, 1000)}},
     "res-grin": {"subset": {"frame": slice(500, 510)}},
+    "rec0": {
+        "subset": {"frame": slice(0, 2999)},
+        "background_removal": {"method": "uniform", "wnd": 50},
+    },
 }
 os.makedirs(OUT_PATH, exist_ok=True)
 os.makedirs(FIG_PATH, exist_ok=True)

@@ -4,13 +4,12 @@ import pickle
 import numpy as np
 from dask.distributed import Client, LocalCluster
 from minian.utilities import TaskAnnotation
-
 from routine.minian_pipeline import minian_process
 
 IN_DPATH = "./data/2color_pilot_tdTomato/cv03/2022_06_21/16_01_56/miniscope_side"
 INT_PATH = "~/var/miniscope_2s/side_int"
 INT_PATH = os.path.abspath(os.path.expanduser(INT_PATH))
-IN_TX = "./store/tx_tdTomato_test.pkl"
+IN_TX = "./store/alignment/cv03-rec0.pkl"
 PARAM = {
     "save_minian": {"meta_dict": None, "overwrite": True},
     "load_videos": {
